@@ -1,6 +1,5 @@
 package me.sullivan.glasslang.interpreter;
 
-import me.sullivan.glasslang.interpreter.errors.RuntimeError;
 import me.sullivan.glasslang.interpreter.primitves.NumberPrimitive;
 import me.sullivan.glasslang.interpreter.runtime.Context;
 import me.sullivan.glasslang.lexer.token.TokenType;
@@ -13,43 +12,23 @@ import me.sullivan.glasslang.parser.nodes.VariableNode;
 
 public class Interpreter {
 
-	public Object visitNode(Node node, Context context)
+	private Context context;
+
+	public Interpreter(Context context)
 	{
-		try
-		{
-			if (node instanceof BinOpNode)
-			{
-				return visitBinOp((BinOpNode)node, context);
-			}
-			else if (node instanceof NumberNode)
-			{
-				return visitNumberNode((NumberNode)node, context);
-			}
-			else if (node instanceof UnaryOpNode)
-			{
-				return visitUnaryOpNode((UnaryOpNode)node, context);
-			}
-			else if (node instanceof VariableNode)
-			{
-				return visitVariableNode((VariableNode)node, context);
-			}
-			else if (node instanceof AssignmentNode)
-			{
-				return visitAssignmentNode((AssignmentNode)node, context);
-			}
-		}
-		catch (ClassCastException e)
-		{
-			throw new RuntimeError("This is a language interpreting error... You did nothing wrong, I swear!");
-		}
-		
-		throw new RuntimeError("This is a language interpreting error... You did nothing wrong, I swear!");
+		this.context = context;
 	}
 
-	private NumberPrimitive visitBinOp(BinOpNode node, Context context)
+	public NumberPrimitive visitNode(Node node)
 	{
-		NumberPrimitive left = (NumberPrimitive)visitNode(node.getLeft(), context);
-		NumberPrimitive right = (NumberPrimitive)visitNode(node.getRight(), context);
+
+		return node.visitor(this);
+	}
+
+	public NumberPrimitive visitBinOp(BinOpNode node)
+	{
+		NumberPrimitive left = visitNode(node.getLeft());
+		NumberPrimitive right = visitNode(node.getRight());
 
 		switch (node.getValue().getType())
 		{
@@ -62,32 +41,31 @@ public class Interpreter {
 		}
 	}
 
-	private NumberPrimitive visitNumberNode(NumberNode node, Context context)
+	public NumberPrimitive visitNumberNode(NumberNode node)
 	{
 		return new NumberPrimitive(node.getValue());
 	}
 
-	private NumberPrimitive visitUnaryOpNode(UnaryOpNode node, Context context)
+	public NumberPrimitive visitUnaryOpNode(UnaryOpNode node)
 	{
-		NumberPrimitive number = (NumberPrimitive)visitNode(node.getNode(), context);
-		
+		NumberPrimitive number = visitNode(node.getNode());
+
 		if (node.getToken().getType() == TokenType.MINUS)
 		{
 			number = number.mul(new NumberPrimitive(-1));
 		}
-		
+
 		return number;
 	}
 
-	private Object visitVariableNode(VariableNode node, Context context)
+	public NumberPrimitive visitVariableNode(VariableNode node)
 	{
 		return context.getTable().get(node.getToken().getValue());
 	}
 
-	private Object visitAssignmentNode(AssignmentNode node, Context context)
+	public NumberPrimitive visitAssignmentNode(AssignmentNode node)
 	{
-		context.getTable().set(node.getToken().getValue(), visitNode(node.getValue(), context));
-		
-		return context.getTable().get(node.getToken().getValue());
+		return context.getTable().set(node.getToken().getValue(), visitNode(node.getValue()));
+
 	}
 }

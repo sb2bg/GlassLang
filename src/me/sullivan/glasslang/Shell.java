@@ -6,6 +6,7 @@ import java.util.Scanner;
 import me.sullivan.glasslang.interpreter.Interpreter;
 import me.sullivan.glasslang.interpreter.errors.RuntimeError;
 import me.sullivan.glasslang.interpreter.runtime.Context;
+import me.sullivan.glasslang.interpreter.runtime.Context.GlobalContext;
 import me.sullivan.glasslang.lexer.Lexer;
 import me.sullivan.glasslang.lexer.errors.InvalidCharError;
 import me.sullivan.glasslang.lexer.token.Token;
@@ -25,7 +26,7 @@ public class Shell {
 		{
 			String curr;
 			System.out.print("Glass Debug > ");
-			Context context = Context.GlobalContext.createGlobalContext();
+			GlobalContext context = new Context.GlobalContext();
 
 			while (SCANNER.hasNext())
 			{
@@ -45,7 +46,7 @@ public class Shell {
 					Node rootNode = new Parser(tokens).parse();
 					System.out.println(rootNode);
 
-					System.out.println(new Interpreter().visitNode(rootNode, context));
+					System.out.println(new Interpreter(context).visitNode(rootNode));
 				}
 				catch (InvalidCharError | InvalidSyntaxError | RuntimeError e)
 				{

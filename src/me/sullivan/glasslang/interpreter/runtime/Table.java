@@ -39,9 +39,10 @@ public class Table<C extends Table<C, V>, V> {
 		return table.get(variable);
 	}
 	
-	public void set(String variable, V value)
+	public V set(String variable, V value)
 	{
 		table.put(variable, value);
+		return value;
 	}
 	
 	public void delete(String variable)

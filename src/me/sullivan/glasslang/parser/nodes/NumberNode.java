@@ -1,5 +1,7 @@
 package me.sullivan.glasslang.parser.nodes;
 
+import me.sullivan.glasslang.interpreter.Interpreter;
+import me.sullivan.glasslang.interpreter.primitves.NumberPrimitive;
 import me.sullivan.glasslang.lexer.token.Token;
 
 public class NumberNode extends Node {
@@ -19,5 +21,11 @@ public class NumberNode extends Node {
 	public String toString()
 	{
 		return "Number(" + getValue() + ")";
+	}
+
+	@Override
+	public NumberPrimitive visitor(Interpreter interpreter)
+	{
+		return interpreter.visitNumberNode(this);
 	}
 }

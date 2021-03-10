@@ -30,14 +30,12 @@ public class Context {
 		return varTable;
 	}
 	
-	public static class GlobalContext
+	public static class GlobalContext extends Context
 	{
-		public static Context createGlobalContext()
+		public GlobalContext()
 		{
-			VariableTable table = new VariableTable();
-			table.set("null", new NumberPrimitive(0));
-			
-			return new Context(null, "<glsmain>", table);
+			super(null, "<glsmain>", new VariableTable());
+			getTable().set("null", new NumberPrimitive(0));
 		}
 	}
 }
