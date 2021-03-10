@@ -7,8 +7,8 @@ import me.sullivan.glasslang.interpreter.errors.RuntimeError;
 
 public class Table<C extends Table<C, V>, V> {
 
-	private C parentTable;
-	private HashMap<String, V> table = new HashMap<>();
+	protected C parentTable;
+	protected HashMap<String, V> table = new HashMap<>();
 	
 	public Table()
 	{
@@ -26,6 +26,11 @@ public class Table<C extends Table<C, V>, V> {
 	
 	public V get(String variable)
 	{
+		if (variable.equals("null"))
+		{
+			throw new RuntimeError("Cannot assign a value to null");
+		}
+		
 		if (!table.containsKey(variable))
 		{
 			throw new RuntimeError(MessageFormat.format("Varible ''{0}'' not defined", variable));

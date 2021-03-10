@@ -1,5 +1,7 @@
 package me.sullivan.glasslang.interpreter.runtime;
 
+import me.sullivan.glasslang.interpreter.primitves.NumberPrimitive;
+
 public class Context {
 
 	private Context parent;
@@ -26,5 +28,16 @@ public class Context {
 	public VariableTable getTable()
 	{
 		return varTable;
+	}
+	
+	public static class GlobalContext
+	{
+		public static Context createGlobalContext()
+		{
+			VariableTable table = new VariableTable();
+			table.set("null", new NumberPrimitive(0));
+			
+			return new Context(null, "<glsmain>", table);
+		}
 	}
 }

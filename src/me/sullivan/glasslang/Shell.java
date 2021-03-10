@@ -4,12 +4,13 @@ import java.util.List;
 import java.util.Scanner;
 
 import me.sullivan.glasslang.interpreter.Interpreter;
-import me.sullivan.glasslang.interpreter.primitves.NumberPrimitive;
+import me.sullivan.glasslang.interpreter.errors.RuntimeError;
 import me.sullivan.glasslang.interpreter.runtime.Context;
-import me.sullivan.glasslang.interpreter.runtime.VariableTable;
 import me.sullivan.glasslang.lexer.Lexer;
+import me.sullivan.glasslang.lexer.errors.InvalidCharError;
 import me.sullivan.glasslang.lexer.token.Token;
 import me.sullivan.glasslang.parser.Parser;
+import me.sullivan.glasslang.parser.errors.InvalidSyntaxError;
 import me.sullivan.glasslang.parser.nodes.Node;
 
 public class Shell {
@@ -24,9 +25,8 @@ public class Shell {
 		{
 			String curr;
 			System.out.print("Glass Debug > ");
-			Context context = new Context(null, "<glmain>", new VariableTable());
-			context.getTable().set("null", new NumberPrimitive(0));
-			
+			Context context = Context.GlobalContext.createGlobalContext();
+
 			while (SCANNER.hasNext())
 			{
 				curr = SCANNER.nextLine();
@@ -37,14 +37,21 @@ public class Shell {
 					return;
 				}
 
-				List<Token> tokens = new Lexer(curr).lex();
-				System.out.println(tokens);
-				
-				Node rootNode = new Parser(tokens).parse();
-				System.out.println(rootNode);
-				
-				System.out.println(new Interpreter().visitNode(rootNode, context));
-				
+				try
+				{
+					List<Token> tokens = new Lexer(curr).lex();
+					System.out.println(tokens);
+
+					Node rootNode = new Parser(tokens).parse();
+					System.out.println(rootNode);
+
+					System.out.println(new Interpreter().visitNode(rootNode, context));
+				}
+				catch (InvalidCharError | InvalidSyntaxError | RuntimeError e)
+				{
+					System.err.println(e.getLocalizedMessage());
+				}
+
 				System.out.print("Glass Debug > ");
 			}
 		}
