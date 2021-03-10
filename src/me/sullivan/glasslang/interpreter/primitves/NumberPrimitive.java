@@ -3,7 +3,7 @@ package me.sullivan.glasslang.interpreter.primitves;
 import me.sullivan.glasslang.interpreter.errors.RuntimeError;
 
 public class NumberPrimitive extends Primitive<Double> {
-
+	
 	public NumberPrimitive(double value)
 	{
 		super(value);
@@ -32,6 +32,11 @@ public class NumberPrimitive extends Primitive<Double> {
 	public NumberPrimitive mul(NumberPrimitive other)
 	{
 		return new NumberPrimitive(value * other.getValue());
+	}
+	
+	public NumberPrimitive pow(NumberPrimitive other)
+	{
+		return new NumberPrimitive(Math.pow(value, other.value));
 	}
 	
 	public double getValue()

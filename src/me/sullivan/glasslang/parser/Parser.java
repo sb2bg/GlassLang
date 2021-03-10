@@ -33,25 +33,27 @@ public class Parser {
 
 	public Node parse()
 	{
-		Node statement = statement();
+		Node exp = expression();
 
 		if (current.getType() != TokenType.EOL && current.getType() != TokenType.EOF)
 		{
-			//throw new InvalidSyntaxError("Expected another statement");
+			throw new InvalidSyntaxError("Expected '+', '-', '*', '/' or '**'");
 		}
 
-		return statement;
+		return exp;
 	}
 
-	private Node mathOp(NodeMethod func, TokenType[] types)
+	private Node mathOp(NodeMethod a, NodeMethod b, TokenType[] types)
 	{
-		Node left = func.get();
+		b = b == null ? a : b;
+		
+		Node left = a.get();
 
 		while (current.getType() != TokenType.EOF && isMatch(types))
 		{
 			Token operator = current;
 			advance();
-			Node right = func.get();
+			Node right = b.get();
 
 			left = new BinOpNode(left, operator, right);
 		}
@@ -59,6 +61,42 @@ public class Parser {
 		return left;
 	}
 
+	private static final TokenType[] TERM = new TokenType[] { TokenType.TIMES, TokenType.DIVIDE };
+
+	private static final TokenType[] EXPRESSION = new TokenType[] { TokenType.PLUS, TokenType.MINUS };
+	
+	private Node expression()
+	{
+		if (current.getType() == TokenType.MONEY_SIGN)
+		{
+			advance();
+			
+			if (current.getType() != TokenType.IDENTIFIER)
+			{
+				throw new InvalidSyntaxError("Expected identifier");
+			}
+			
+			Token identifier = current;
+			advance();
+			
+			if (current.getType() != TokenType.EQUALS)
+			{
+				throw new InvalidSyntaxError("Expected '='");
+			}
+			
+			advance();
+			
+			return new AssignmentNode(identifier, expression());
+		}
+		
+		return mathOp(() -> term(), null, EXPRESSION);
+	}
+	
+	private Node term()
+	{
+		return mathOp(() -> factor(), null, TERM);
+	}
+	
 	private Node factor()
 	{
 		Token token = current;
@@ -70,7 +108,20 @@ public class Parser {
 
 			return new UnaryOpNode(token, factor);
 		}
-		else if (current.getType() == TokenType.NUMBER)
+
+		return power();
+	}
+	
+	private Node power()
+	{
+		return mathOp(() -> atom(), () -> factor(), new TokenType[] { TokenType.POWER });
+	}
+	
+	private Node atom()
+	{
+		Token token = current;
+		
+		if (current.getType() == TokenType.NUMBER)
 		{
 			advance();
 			return new NumberNode(token);
@@ -95,61 +146,8 @@ public class Parser {
 				throw new InvalidSyntaxError("Expected ')'");
 			}
 		}
-
-		throw new InvalidSyntaxError("Expected int or float");
-	}
-
-	private static final TokenType[] TERM = new TokenType[] { TokenType.TIMES, TokenType.DIVIDE };
-
-	private Node term()
-	{
-		return mathOp(() -> factor(), TERM);
-	}
-
-	private static final TokenType[] EXPRESSION = new TokenType[] { TokenType.PLUS, TokenType.MINUS };
-
-	private Node statement()
-	{
-		AssignmentNode assignNode = parseAssignment();
-
-		if (assignNode != null)
-		{
-			return assignNode;
-		}
-
-		return expression();
-	}
-
-	private Node expression()
-	{
-		return mathOp(() -> term(), EXPRESSION);
-	}
-
-	private AssignmentNode parseAssignment()
-	{
-		if (current.getType() == TokenType.VAR)
-		{
-			advance();
-
-			if (current.getType() != TokenType.IDENTIFIER)
-			{
-				throw new InvalidSyntaxError("Expected an identifier");
-			}
-
-			Token iden = current;
-			advance();
-
-			if (current.getType() != TokenType.EQUALS)
-			{
-				throw new InvalidSyntaxError("Expected '='");
-			}
-
-			advance();
-
-			return new AssignmentNode(iden, expression());
-		}
-
-		return null;
+		
+		throw new InvalidSyntaxError("Expected int, float, identifier, '+', '-' or '('");
 	}
 
 	private Token advance()

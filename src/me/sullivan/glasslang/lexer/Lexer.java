@@ -37,10 +37,11 @@ public class Lexer {
 		
 		TOKENS.put("func", TokenType.FUNC);
 		TOKENS.put("while", TokenType.WHILE);
-		TOKENS.put("var", TokenType.VAR);
-		TOKENS.put("var", TokenType.VAR);
+		TOKENS.put("$", TokenType.MONEY_SIGN);
+		TOKENS.put("@", TokenType.AT_SIGN);
 		TOKENS.put("return", TokenType.RETURN);
 		TOKENS.put("if", TokenType.IF);
+		TOKENS.put("for", TokenType.FOR);
 	}
 
 	private final String input;
@@ -77,11 +78,11 @@ public class Lexer {
 			{
 				tokens.add(consumeNumber());
 			}
-			else if (isConsumable())
+			else if (isOperator())
 			{
 				tokens.add(consumeOperator());
 			}
-			else if (isParentheses() || isOperator() || isComma())
+			else if (isSingleConsume())
 			{
 				tokens.add(new Token(TOKENS.get(Character.toString(current))));
 				advance();
@@ -104,7 +105,7 @@ public class Lexer {
 	{
 		StringBuilder buffer = new StringBuilder();
 
-		while (isConsumable())
+		while (current != NUL && isOperator())
 		{
 			buffer.append(current);
 			advance();
@@ -143,7 +144,7 @@ public class Lexer {
 		advance();
 		return new Token(TokenType.STRING, buffer.toString());
 	}
-
+	
 	private String numString()
 	{
 		StringBuilder buffer = new StringBuilder();
@@ -183,7 +184,7 @@ public class Lexer {
 	{
 		StringBuilder buffer = new StringBuilder();
 
-		while (current != NUL && (isLetter() || isNumber()))
+		while (current != NUL && (isLetter() || isNumber() || isUnderscore()))
 		{
 			buffer.append(current);
 			advance();
@@ -211,13 +212,6 @@ public class Lexer {
 		return WHITESPACE.contains(Character.toString(current));
 	}
 
-	private boolean isConsumable()
-	{
-		return current == '<' 
-				|| current == '>' || current == '=' 
-				|| current == '!';
-	}
-
 	private boolean isNumber()
 	{
 		return Character.isDigit(current);
@@ -240,16 +234,16 @@ public class Lexer {
 
 	private boolean isOperator()
 	{
-		return "+-*/".contains(Character.toString(current));
+		return "+-*/<>=!".contains(Character.toString(current));
 	}
 	
-	private boolean isComma()
+	private boolean isSingleConsume()
 	{
-		return "+-*/".contains(Character.toString(current));
+		return ",()$@".contains(Character.toString(current));
 	}
 	
-	private boolean isParentheses()
+	private boolean isUnderscore()
 	{
-		return "()".contains(Character.toString(current));
+		return "_".contains(Character.toString(current));
 	}
 }

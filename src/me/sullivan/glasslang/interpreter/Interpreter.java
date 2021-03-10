@@ -57,6 +57,7 @@ public class Interpreter {
 		case MINUS: return left.min(right);
 		case DIVIDE: return left.div(right);
 		case TIMES: return left.mul(right);
+		case POWER: return left.pow(right);
 		default: return null;
 		}
 	}
@@ -80,11 +81,13 @@ public class Interpreter {
 
 	private Object visitVariableNode(VariableNode node, Context context)
 	{
-		return null;
+		return context.getTable().get(node.getToken().getValue());
 	}
 
 	private Object visitAssignmentNode(AssignmentNode node, Context context)
 	{
-		return null;
+		context.getTable().set(node.getToken().getValue(), visitNode(node.getValue(), context));
+		
+		return context.getTable().get(node.getToken().getValue());
 	}
 }

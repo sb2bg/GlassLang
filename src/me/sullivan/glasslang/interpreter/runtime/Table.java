@@ -1,6 +1,9 @@
 package me.sullivan.glasslang.interpreter.runtime;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
+
+import me.sullivan.glasslang.interpreter.errors.RuntimeError;
 
 public class Table<C extends Table<C, V>, V> {
 
@@ -23,6 +26,11 @@ public class Table<C extends Table<C, V>, V> {
 	
 	public V get(String variable)
 	{
+		if (!table.containsKey(variable))
+		{
+			throw new RuntimeError(MessageFormat.format("Varible ''{0}'' not defined", variable));
+		}
+		
 		return table.get(variable);
 	}
 	

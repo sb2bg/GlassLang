@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Scanner;
 
 import me.sullivan.glasslang.interpreter.Interpreter;
+import me.sullivan.glasslang.interpreter.primitves.NumberPrimitive;
 import me.sullivan.glasslang.interpreter.runtime.Context;
+import me.sullivan.glasslang.interpreter.runtime.VariableTable;
 import me.sullivan.glasslang.lexer.Lexer;
 import me.sullivan.glasslang.lexer.token.Token;
 import me.sullivan.glasslang.parser.Parser;
@@ -22,6 +24,8 @@ public class Shell {
 		{
 			String curr;
 			System.out.print("Glass Debug > ");
+			Context context = new Context(null, "<glmain>", new VariableTable());
+			context.getTable().set("null", new NumberPrimitive(0));
 			
 			while (SCANNER.hasNext())
 			{
@@ -39,7 +43,7 @@ public class Shell {
 				Node rootNode = new Parser(tokens).parse();
 				System.out.println(rootNode);
 				
-				System.out.println(new Interpreter().visitNode(rootNode, new Context()));
+				System.out.println(new Interpreter().visitNode(rootNode, context));
 				
 				System.out.print("Glass Debug > ");
 			}
