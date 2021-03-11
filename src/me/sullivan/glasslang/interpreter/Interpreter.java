@@ -65,7 +65,7 @@ public class Interpreter {
 
 	public NumberPrimitive visitAssignmentNode(AssignmentNode node)
 	{
-		return context.getTable().set(node.getToken().getValue(), visitNode(node.getValue()));
+		return context.getTable().set(node.getToken().getValue(), visitNode(node.getValue()), false);
 
 	}
 }

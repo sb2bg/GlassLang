@@ -1,12 +1,14 @@
 package me.sullivan.glasslang.interpreter.runtime;
 
+import java.util.HashMap;
+
 import me.sullivan.glasslang.interpreter.primitves.NumberPrimitive;
 
 public class Context {
 
-	private Context parent;
-	private String context;
-	private VariableTable varTable;
+	protected Context parent;
+	protected String context;
+	protected VariableTable varTable;
 	
 	public Context(Context parent, String context, VariableTable varTable)
 	{
@@ -32,10 +34,27 @@ public class Context {
 	
 	public static class GlobalContext extends Context
 	{
+		private static final HashMap<String, NumberPrimitive> DEFAULTS = new HashMap<>();
+		static
+		{
+			DEFAULTS.put("null", new NumberPrimitive(0));
+			DEFAULTS.put("true", new NumberPrimitive(1));
+			DEFAULTS.put("false", new NumberPrimitive(0));
+		}
+		
 		public GlobalContext()
 		{
 			super(null, "<glsmain>", new VariableTable());
-			getTable().set("null", new NumberPrimitive(0));
+			
+			for (String key : DEFAULTS.keySet())
+			{
+				getTable().set(key, DEFAULTS.get(key), true);
+			}
+		}
+		
+		public static HashMap<String, NumberPrimitive> getDefaults()
+		{
+			return DEFAULTS;
 		}
 	}
 }

@@ -34,6 +34,7 @@ public class Lexer {
 		TOKENS.put("*=", TokenType.TIMES_EQUALS);
 		TOKENS.put("/=", TokenType.DIVIDED_EQUALS);
 		TOKENS.put("!=", TokenType.NOT_EQUAL);
+		TOKENS.put("==", TokenType.EQUAL_OP);
 		
 		TOKENS.put("func", TokenType.FUNC);
 		TOKENS.put("while", TokenType.WHILE);
