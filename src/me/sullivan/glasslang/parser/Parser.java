@@ -1,17 +1,25 @@
 package me.sullivan.glasslang.parser;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import me.sullivan.glasslang.lexer.token.Token;
 import me.sullivan.glasslang.lexer.token.TokenType;
 import me.sullivan.glasslang.parser.errors.InvalidSyntaxError;
 import me.sullivan.glasslang.parser.nodes.AssignmentNode;
 import me.sullivan.glasslang.parser.nodes.BinOpNode;
+import me.sullivan.glasslang.parser.nodes.CallNode;
+import me.sullivan.glasslang.parser.nodes.ForNode;
+import me.sullivan.glasslang.parser.nodes.FunctionDefinitonNode;
+import me.sullivan.glasslang.parser.nodes.IfNode;
 import me.sullivan.glasslang.parser.nodes.Node;
 import me.sullivan.glasslang.parser.nodes.NumberNode;
 import me.sullivan.glasslang.parser.nodes.UnaryOpNode;
 import me.sullivan.glasslang.parser.nodes.VariableNode;
+import me.sullivan.glasslang.parser.nodes.WhileNode;
 
 public class Parser {
 
@@ -37,7 +45,13 @@ public class Parser {
 
 		if (current.getType() != TokenType.EOL && current.getType() != TokenType.EOF)
 		{
-			throw new InvalidSyntaxError("Expected '+', '-', '*', '/' or '**'");
+			throw new InvalidSyntaxError(new TokenType[] {
+					TokenType.PLUS, TokenType.MINUS,TokenType.TIMES,
+					TokenType.DIVIDE, TokenType.POWER, TokenType.EQUAL_OP, 
+					TokenType.NOT_EQUAL, TokenType.LESS, TokenType.GREATER, 
+					TokenType.LESS_EQUAL, TokenType.GREATER_EQUAL, TokenType.AND, 
+					TokenType.OR
+			});
 		}
 
 		return exp;
@@ -46,7 +60,7 @@ public class Parser {
 	private Node mathOp(NodeMethod a, NodeMethod b, TokenType[] types)
 	{
 		b = b == null ? a : b;
-		
+
 		Node left = a.get();
 
 		while (current.getType() != TokenType.EOF && isMatch(types))
@@ -61,66 +75,120 @@ public class Parser {
 		return left;
 	}
 
-	private static final TokenType[] TERM = new TokenType[] { TokenType.TIMES, TokenType.DIVIDE };
-
-	private static final TokenType[] EXPRESSION = new TokenType[] { TokenType.PLUS, TokenType.MINUS };
-	
 	private Node expression()
 	{
 		if (current.getType() == TokenType.MONEY_SIGN)
 		{
 			advance();
-			
+
 			if (current.getType() != TokenType.IDENTIFIER)
 			{
-				throw new InvalidSyntaxError("Expected identifier");
+				throw new InvalidSyntaxError(new TokenType[] { TokenType.IDENTIFIER });
 			}
-			
+
 			Token identifier = current;
 			advance();
-			
+
 			if (current.getType() != TokenType.EQUALS)
 			{
-				throw new InvalidSyntaxError("Expected '='");
+				throw new InvalidSyntaxError(new TokenType[] { TokenType.EQUALS });
 			}
-			
+
 			advance();
-			
+
 			return new AssignmentNode(identifier, expression());
 		}
-		
-		return mathOp(() -> term(), null, EXPRESSION);
+
+		return mathOp(() -> compExpression(), null, new TokenType[] { TokenType.AND, TokenType.OR });
 	}
-	
+
+	private Node compExpression()
+	{
+		if (current.getType() == TokenType.NOT)
+		{
+			Token token = current;
+			advance();
+
+			return new UnaryOpNode(token, compExpression());
+		}
+
+		return mathOp(() -> arithExpression(), null, new TokenType[] { 
+				TokenType.LESS, TokenType.LESS_EQUAL, 
+				TokenType.GREATER, TokenType.GREATER_EQUAL,
+				TokenType.EQUAL_OP, TokenType.NOT_EQUAL
+		});
+	}
+
+	private Node arithExpression()
+	{
+		return mathOp(() -> term(), null, new TokenType[] { TokenType.PLUS, TokenType.MINUS });
+	}
+
 	private Node term()
 	{
-		return mathOp(() -> factor(), null, TERM);
+		return mathOp(() -> factor(), null, new TokenType[] { TokenType.TIMES, TokenType.DIVIDE });
 	}
-	
+
 	private Node factor()
 	{
 		Token token = current;
 
-		if (isMatch(EXPRESSION))
+		if (isMatch(new TokenType[] { TokenType.PLUS, TokenType.MINUS }))
 		{
 			advance();
-			Node factor = factor();
 
-			return new UnaryOpNode(token, factor);
+			return new UnaryOpNode(token, factor());
 		}
 
 		return power();
 	}
-	
+
 	private Node power()
 	{
-		return mathOp(() -> atom(), () -> factor(), new TokenType[] { TokenType.POWER });
+		return mathOp(() -> call(), () -> factor(), new TokenType[] { TokenType.POWER });
 	}
-	
+
+	private Node call()
+	{
+		Node atom = atom();
+		List<Node> argNodes = new ArrayList<>();
+
+		if (current.getType() == TokenType.LPAREN)
+		{
+			advance();
+
+			if (current.getType() == TokenType.RPAREN)
+			{
+				advance();
+			}
+			else
+			{
+				argNodes.add(expression());
+				
+				while (current.getType() == TokenType.COMMA)
+				{
+					advance();
+					
+					argNodes.add(expression());
+				}
+				
+				if (current.getType() != TokenType.RPAREN)
+				{
+					throw new InvalidSyntaxError(new TokenType[] { TokenType.RPAREN });
+				}
+				advance();
+			}
+			
+			return new CallNode(atom, argNodes);
+		}
+		
+		return atom;
+	}
+
 	private Node atom()
 	{
 		Token token = current;
-		
+
 		if (current.getType() == TokenType.NUMBER)
 		{
 			advance();
@@ -143,11 +211,212 @@ public class Parser {
 			}
 			else
 			{
-				throw new InvalidSyntaxError("Expected ')'");
+				throw new InvalidSyntaxError(new TokenType[] { TokenType.LPAREN });
 			}
 		}
-		
-		throw new InvalidSyntaxError("Expected int, float, identifier, '+', '-' or '('");
+		else if (current.getType() == TokenType.IF)
+		{
+			return ifExpression();
+		}
+		else if (current.getType() == TokenType.FOR)
+		{
+			return forExpression();
+		}
+		else if (current.getType() == TokenType.WHILE)
+		{
+			return whileExpression();
+		}
+		else if (current.getType() == TokenType.AT_SIGN)
+		{
+			return funcDefinition();
+		}
+
+		throw new InvalidSyntaxError(new TokenType[] {
+				TokenType.NUMBER, TokenType.IDENTIFIER, TokenType.PLUS, 
+				TokenType.MINUS, TokenType.LPAREN });
+	}
+
+	private Node ifExpression()
+	{
+		Map<Node, Node> cases = new HashMap<>();
+		Node elseCase = null;
+
+		if (current.getType() != TokenType.IF)
+		{
+			throw new InvalidSyntaxError(new TokenType[] { TokenType.IF });
+		}
+
+		advance();
+		Node condition = expression();
+
+		if (current.getType() != TokenType.LAMBDA)
+		{
+			throw new InvalidSyntaxError(new TokenType[] { TokenType.LAMBDA });
+		}
+
+		advance();
+		cases.put(condition, expression());
+
+		while (current.getType() == TokenType.ELIF)
+		{
+			advance();
+			condition = expression();
+
+			if (current.getType() != TokenType.LAMBDA)
+			{
+				throw new InvalidSyntaxError(new TokenType[] { TokenType.ELIF });
+			}
+
+			advance();
+			cases.put(condition, expression());
+		}
+
+		if (current.getType() == TokenType.ELSE)
+		{
+			advance();
+			elseCase = expression();
+		}
+
+		return new IfNode(new Token(TokenType.IF), cases, elseCase);
+	}
+
+	private Node forExpression()
+	{
+		if (current.getType() != TokenType.FOR)
+		{
+			throw new InvalidSyntaxError(new TokenType[] { TokenType.FOR });
+		}
+
+		advance();
+
+		if (current.getType() != TokenType.IDENTIFIER)
+		{
+			throw new InvalidSyntaxError(new TokenType[] { TokenType.IDENTIFIER });
+		}
+
+		Token variable = current;
+		advance();
+
+		if (current.getType() != TokenType.EQUALS)
+		{
+			throw new InvalidSyntaxError(new TokenType[] { TokenType.EQUALS });
+		}
+
+		advance();
+		Node startVal = expression();
+
+		if (current.getType() != TokenType.TO)
+		{
+			throw new InvalidSyntaxError(new TokenType[] { TokenType.TO });
+		}
+
+		advance();
+		Node endVal = expression();
+		Node step = null;
+
+		if (current.getType() == TokenType.STEP)
+		{
+			advance();
+			step = expression();
+		}
+
+		if (current.getType() != TokenType.LAMBDA)
+		{
+			throw new InvalidSyntaxError(new TokenType[] { TokenType.LAMBDA });
+		}
+
+		advance();
+		return new ForNode(variable, startVal, endVal, step, expression());
+	}
+
+	private Node whileExpression()
+	{
+		if (current.getType() != TokenType.WHILE)
+		{
+			throw new InvalidSyntaxError(new TokenType[] { TokenType.WHILE });
+		}
+
+		advance();
+		Node condition = expression();
+
+		if (current.getType() != TokenType.LAMBDA)
+		{
+			throw new InvalidSyntaxError(new TokenType[] { TokenType.LAMBDA });
+		}
+
+		advance();
+		return new WhileNode(condition, expression());
+	}
+
+	private Node funcDefinition()
+	{
+		if (current.getType() != TokenType.AT_SIGN)
+		{
+			throw new InvalidSyntaxError(new TokenType[] { TokenType.AT_SIGN });
+		}
+
+		advance();
+
+		Token func = null;
+		List<Token> args = new ArrayList<>();
+
+		if (current.getType() == TokenType.IDENTIFIER)
+		{
+			func = current;
+			advance();
+
+			if (current.getType() != TokenType.LPAREN)
+			{
+				throw new InvalidSyntaxError(new TokenType[] { TokenType.LPAREN });
+			}
+
+		}
+		else if (current.getType() != TokenType.LPAREN)
+		{
+			throw new InvalidSyntaxError(new TokenType[] { TokenType.LPAREN, TokenType.IDENTIFIER });
+		}
+
+		advance();
+
+		if (current.getType() == TokenType.IDENTIFIER)
+		{
+			args.add(current);
+			advance();
+
+			while (current.getType() == TokenType.COMMA)
+			{
+				advance();
+
+				if (current.getType() != TokenType.IDENTIFIER)
+				{
+					throw new InvalidSyntaxError(new TokenType[] { TokenType.IDENTIFIER });
+				}
+
+				args.add(current);
+				advance();
+			}
+
+			if (current.getType() != TokenType.RPAREN)
+			{
+				throw new InvalidSyntaxError(new TokenType[] { TokenType.COMMA, TokenType.RPAREN });
+			}
+		}
+		else if (current.getType() != TokenType.RPAREN)
+		{
+			throw new InvalidSyntaxError(new TokenType[] { TokenType.IDENTIFIER, TokenType.RPAREN });
+		}
+
+		advance();
+
+		if (current.getType() != TokenType.LAMBDA)
+		{
+			System.out.println(current);
+			throw new InvalidSyntaxError(new TokenType[] { TokenType.LAMBDA });
+		}
+
+		advance();
+
+		return new FunctionDefinitonNode(func, args, expression());
 	}
 
 	private Token advance()

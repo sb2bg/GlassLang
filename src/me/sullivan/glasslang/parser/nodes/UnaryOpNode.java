@@ -1,7 +1,7 @@
 package me.sullivan.glasslang.parser.nodes;
 
 import me.sullivan.glasslang.interpreter.Interpreter;
-import me.sullivan.glasslang.interpreter.primitves.NumberPrimitive;
+import me.sullivan.glasslang.interpreter.primitives.Primitive;
 import me.sullivan.glasslang.lexer.token.Token;
 
 public class UnaryOpNode extends Node {
@@ -32,7 +32,7 @@ public class UnaryOpNode extends Node {
 	}
 
 	@Override
-	public NumberPrimitive visitor(Interpreter interpreter)
+	public Primitive<?> visitor(Interpreter interpreter)
 	{
 		return interpreter.visitUnaryOpNode(this);
 	}

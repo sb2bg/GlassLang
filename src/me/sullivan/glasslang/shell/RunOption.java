@@ -3,7 +3,7 @@ package me.sullivan.glasslang.shell;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.sullivan.glasslang.interpreter.primitves.NumberPrimitive;
+import me.sullivan.glasslang.interpreter.primitives.Primitive;
 import me.sullivan.glasslang.lexer.token.Token;
 import me.sullivan.glasslang.parser.nodes.Node;
 
@@ -45,7 +45,7 @@ public class RunOption {
 	}
 	
 	// TEMP wont have to print once we have print method
-	public void printInt(NumberPrimitive result)
+	public void printInt(Primitive<?> result)
 	{
 		if (!options.contains(OptionType.G_OUT_INT))
 		{

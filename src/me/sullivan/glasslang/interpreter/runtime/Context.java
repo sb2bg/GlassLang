@@ -1,11 +1,68 @@
 package me.sullivan.glasslang.interpreter.runtime;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
-import me.sullivan.glasslang.interpreter.primitves.NumberPrimitive;
+import me.sullivan.glasslang.interpreter.primitives.NumberPrimitive;
+import me.sullivan.glasslang.interpreter.primitives.Primitive;
+import me.sullivan.glasslang.interpreter.primitives.VoidPrimitive;
+import me.sullivan.glasslang.interpreter.runtime.tables.VariableTable;
 
 public class Context {
 
+	public enum Keyword
+	{
+		TRUE ("true"), FALSE ("false"), VOID ("void");
+		
+		private String keyword;
+		
+		private Keyword(String keyword)
+		{
+			this.keyword = keyword;
+		}
+		
+		public String getKeyword()
+		{
+			return keyword;
+		}
+	}
+	
+	private static final HashMap<Keyword, Primitive<?>> DEFAULTS = new HashMap<>();
+	static
+	{
+		DEFAULTS.put(Keyword.TRUE, new NumberPrimitive(1, null));
+		DEFAULTS.put(Keyword.FALSE, new NumberPrimitive(0, null));
+		DEFAULTS.put(Keyword.VOID, new VoidPrimitive());
+	}
+	private static final Context GLOBAL = new Context(null, "<gls-main>", createGlobalTable());
+	
+	private static VariableTable createGlobalTable()
+	{		
+		VariableTable table = new VariableTable();
+		
+		for (Keyword keyword : DEFAULTS.keySet())
+		{
+			table.inject(keyword.getKeyword(), DEFAULTS.get(keyword));
+		}
+		
+		return table;
+	}
+	
+	public static Context getGlobalContext()
+	{
+		return GLOBAL;
+	}
+	
+	public static Set<String> getDefaults()
+	{
+		Set<String> defaults = new HashSet<>();
+		
+		DEFAULTS.keySet().forEach(key -> defaults.add(key.getKeyword()));
+		
+		return defaults;
+	}
+	
 	protected Context parent;
 	protected String context;
 	protected VariableTable varTable;
@@ -30,31 +87,5 @@ public class Context {
 	public VariableTable getTable()
 	{
 		return varTable;
-	}
-	
-	public static class GlobalContext extends Context
-	{
-		private static final HashMap<String, NumberPrimitive> DEFAULTS = new HashMap<>();
-		static
-		{
-			DEFAULTS.put("null", new NumberPrimitive(0));
-			DEFAULTS.put("true", new NumberPrimitive(1));
-			DEFAULTS.put("false", new NumberPrimitive(0));
-		}
-		
-		public GlobalContext()
-		{
-			super(null, "<glsmain>", new VariableTable());
-			
-			for (String key : DEFAULTS.keySet())
-			{
-				getTable().set(key, DEFAULTS.get(key), true);
-			}
-		}
-		
-		public static HashMap<String, NumberPrimitive> getDefaults()
-		{
-			return DEFAULTS;
-		}
 	}
 }

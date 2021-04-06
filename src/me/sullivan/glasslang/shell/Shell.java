@@ -4,9 +4,8 @@ import java.util.List;
 import java.util.Scanner;
 
 import me.sullivan.glasslang.interpreter.Interpreter;
-import me.sullivan.glasslang.interpreter.primitves.NumberPrimitive;
+import me.sullivan.glasslang.interpreter.primitives.Primitive;
 import me.sullivan.glasslang.interpreter.runtime.Context;
-import me.sullivan.glasslang.interpreter.runtime.Context.GlobalContext;
 import me.sullivan.glasslang.lexer.Lexer;
 import me.sullivan.glasslang.lexer.token.Token;
 import me.sullivan.glasslang.parser.Parser;
@@ -15,8 +14,7 @@ import me.sullivan.glasslang.parser.nodes.Node;
 public class Shell {
 
 	private static final Scanner SCANNER = new Scanner(System.in);
-	
-	private static final GlobalContext G_CONTEXT = new Context.GlobalContext();
+	private static final Context G_CONTEXT = Context.getGlobalContext();
 	private static RunOption runOption;
 	
 	public static void main(String[] args)
@@ -34,7 +32,7 @@ public class Shell {
 			Node node = new Parser(tokens).parse();
 			runOption.printParse(node);
 			
-			NumberPrimitive result = new Interpreter(G_CONTEXT).visitNode(node);
+			Primitive<?> result = new Interpreter(G_CONTEXT).visitNode(node);
 			runOption.printInt(result);
 			
 			acceptIn();

@@ -35,14 +35,22 @@ public class Lexer {
 		TOKENS.put("/=", TokenType.DIVIDED_EQUALS);
 		TOKENS.put("!=", TokenType.NOT_EQUAL);
 		TOKENS.put("==", TokenType.EQUAL_OP);
+		TOKENS.put("=>", TokenType.LAMBDA);
 		
-		TOKENS.put("func", TokenType.FUNC);
-		TOKENS.put("while", TokenType.WHILE);
 		TOKENS.put("$", TokenType.MONEY_SIGN);
 		TOKENS.put("@", TokenType.AT_SIGN);
+		TOKENS.put("while", TokenType.WHILE);
 		TOKENS.put("return", TokenType.RETURN);
 		TOKENS.put("if", TokenType.IF);
 		TOKENS.put("for", TokenType.FOR);
+		TOKENS.put("and", TokenType.AND);
+		TOKENS.put("or", TokenType.OR);
+		TOKENS.put("not", TokenType.NOT);
+		TOKENS.put("else", TokenType.ELSE);
+		TOKENS.put("elif", TokenType.ELIF);
+		TOKENS.put("end", TokenType.END);
+		TOKENS.put("step", TokenType.STEP);
+		TOKENS.put("to", TokenType.TO);
 	}
 
 	private final String input;
