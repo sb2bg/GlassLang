@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import me.sullivan.glasslang.interpreter.primitives.NumberPrimitive;
+import me.sullivan.glasslang.interpreter.primitives.BooleanPrimitive;
 import me.sullivan.glasslang.interpreter.primitives.Primitive;
 import me.sullivan.glasslang.interpreter.primitives.VoidPrimitive;
 import me.sullivan.glasslang.interpreter.runtime.tables.VariableTable;
@@ -31,8 +31,8 @@ public class Context {
 	private static final HashMap<Keyword, Primitive<?>> DEFAULTS = new HashMap<>();
 	static
 	{
-		DEFAULTS.put(Keyword.TRUE, new NumberPrimitive(1, null));
-		DEFAULTS.put(Keyword.FALSE, new NumberPrimitive(0, null));
+		DEFAULTS.put(Keyword.TRUE, new BooleanPrimitive(true, null));
+		DEFAULTS.put(Keyword.FALSE, new BooleanPrimitive(false, null));
 		DEFAULTS.put(Keyword.VOID, new VoidPrimitive());
 	}
 	private static final Context GLOBAL = new Context(null, "<gls-main>", createGlobalTable());

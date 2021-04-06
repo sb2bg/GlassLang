@@ -29,7 +29,7 @@ public class ForNode extends Node {
 	@Override
 	public String toString()
 	{
-		return "For";
+		return "For(start=" + startValue + ", endValue=" + endValue + ", step=" + step + ", body=" + eval + ")";
 	}
 
 	@Override

@@ -17,6 +17,8 @@ public class Shell {
 	private static final Context G_CONTEXT = Context.getGlobalContext();
 	private static RunOption runOption;
 	
+	// TODO parent variable tables not setting correctly
+	
 	public static void main(String[] args)
 	{
 		runOption = new RunOption(args);

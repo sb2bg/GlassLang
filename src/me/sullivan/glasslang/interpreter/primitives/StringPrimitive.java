@@ -1,9 +1,7 @@
 package me.sullivan.glasslang.interpreter.primitives;
 
-import java.util.List;
-
+import me.sullivan.glasslang.interpreter.errors.RuntimeError;
 import me.sullivan.glasslang.interpreter.runtime.Context;
-import me.sullivan.glasslang.parser.nodes.Node;
 
 public class StringPrimitive extends Primitive<String> {
 
@@ -13,99 +11,62 @@ public class StringPrimitive extends Primitive<String> {
 	}
 
 	@Override
-	public Primitive<?> add(Primitive<?> other) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Primitive<?> min(Primitive<?> other) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Primitive<?> div(Primitive<?> other) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Primitive<?> mul(Primitive<?> other) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Primitive<?> pow(Primitive<?> other) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Primitive<?> less(Primitive<?> other) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Primitive<?> lessEqual(Primitive<?> other) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Primitive<?> greater(Primitive<?> other) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Primitive<?> greaterEqual(Primitive<?> other) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Primitive<?> equal(Primitive<?> other) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Primitive<?> notEqual(Primitive<?> other) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Primitive<?> and(Primitive<?> other) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Primitive<?> or(Primitive<?> other) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Primitive<?> not() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean isTrue() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public Primitive<?> call(List<Node> argNodes)
+	public Primitive<?> add(Primitive<?> other)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		if (other.type == Type.STRING)
+		{
+			StringPrimitive value = other.getValue(Type.STRING);
+			return new StringPrimitive(this.value + value.getValue(), context);
+		}
+		else if (other.type == Type.NUMBER)
+		{
+			NumberPrimitive value = other.getValue(Type.NUMBER);
+			return new StringPrimitive(this.value + NumberPrimitive.doubleToString(value.getValue()), context);
+		}
+		else if (other.type == Type.BOOLEAN)
+		{
+			BooleanPrimitive value = other.getValue(Type.BOOLEAN);
+			return new StringPrimitive(this.value + value.getValue(), context);
+		}
+		
+		throw new RuntimeError("Cannot concatenate " + getClass().getSimpleName() + " and " + other.getClass().getSimpleName());
+	}
+	
+	@Override
+	public Primitive<?> mul(Primitive<?> other)
+	{
+		if (other.type == Type.NUMBER)
+		{
+			NumberPrimitive multi = other.getValue(Type.NUMBER);
+			
+			return new StringPrimitive(multiply(this.value, multi.getValue()), context);
+		}
+		
+		throw new RuntimeError("Right hand of operation '*' must be a number");
+	}
+	
+	@Override
+	public BooleanPrimitive equal(Primitive<?> other)
+	{
+		if (other.type != Type.STRING)
+		{
+			return new BooleanPrimitive(false, context);
+		}
+		
+		StringPrimitive value = other.getValue(Type.STRING);
+		
+		return new BooleanPrimitive(this.value.equals(value.getValue()), context);
+	}
+	
+	public static String multiply(String string, double iterations)
+	{
+		StringBuilder value = new StringBuilder();
+		
+		for (int i = 0; i < iterations; i++)
+		{
+			value.append(string);
+		}
+		
+		return value.toString();
 	}
 }

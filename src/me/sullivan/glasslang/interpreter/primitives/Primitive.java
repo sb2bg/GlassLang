@@ -30,67 +30,67 @@ public abstract class Primitive<T> {
 		throw new RuntimeError("Cannot add " + getClass().getSimpleName() + " and " + other.getClass().getSimpleName());
 	}
 	
-	public Primitive<?> min(Primitive<?> other)
+	public NumberPrimitive min(Primitive<?> other)
 	{
 		throw new RuntimeError("Cannot subtract " + getClass().getSimpleName() + " and " + other.getClass().getSimpleName());
 	}
 	
-	public Primitive<?> div(Primitive<?> other)
+	public NumberPrimitive div(Primitive<?> other)
 	{
 		throw new RuntimeError("Cannot divide " + getClass().getSimpleName() + " with " + other.getClass().getSimpleName());
 	}
 	
 	public Primitive<?> mul(Primitive<?> other)
 	{
-		throw new RuntimeError("Cannot compare " + getClass().getSimpleName() + " and " + other.getClass().getSimpleName());
+		throw new RuntimeError("Cannot multiply " + getClass().getSimpleName() + " and " + other.getClass().getSimpleName());
 	}
 	
-	public Primitive<?> pow(Primitive<?> other)
+	public NumberPrimitive pow(Primitive<?> other)
 	{
-		throw new RuntimeError("Cannot compare " + getClass().getSimpleName() + " and " + other.getClass().getSimpleName());
+		throw new RuntimeError("Cannot power " + getClass().getSimpleName() + " and " + other.getClass().getSimpleName());
 	}
-	
+
 	public Primitive<?> less(Primitive<?> other)
 	{
 		throw new RuntimeError("Cannot compare " + getClass().getSimpleName() + " and " + other.getClass().getSimpleName());
 	}
 	
-	public Primitive<?> lessEqual(Primitive<?> other)
+	public BooleanPrimitive lessEqual(Primitive<?> other)
 	{
 		throw new RuntimeError("Cannot compare " + getClass().getSimpleName() + " and " + other.getClass().getSimpleName());
 	}
 	
-	public Primitive<?> greater(Primitive<?> other)
+	public BooleanPrimitive greater(Primitive<?> other)
 	{
 		throw new RuntimeError("Cannot compare " + getClass().getSimpleName() + " and " + other.getClass().getSimpleName());
 	}
 	
-	public Primitive<?> greaterEqual(Primitive<?> other)
+	public BooleanPrimitive greaterEqual(Primitive<?> other)
 	{
 		throw new RuntimeError("Cannot compare " + getClass().getSimpleName() + " and " + other.getClass().getSimpleName());
 	}
 	
-	public Primitive<?> equal(Primitive<?> other)
+	public BooleanPrimitive equal(Primitive<?> other)
 	{
 		throw new RuntimeError("Cannot compare " + getClass().getSimpleName() + " and " + other.getClass().getSimpleName());
 	}
 	
-	public Primitive<?> notEqual(Primitive<?> other)
+	public BooleanPrimitive notEqual(Primitive<?> other)
 	{
 		throw new RuntimeError("Cannot compare " + getClass().getSimpleName() + " and " + other.getClass().getSimpleName());
 	}
 	
-	public Primitive<?> and(Primitive<?> other)
+	public BooleanPrimitive and(Primitive<?> other)
 	{
 		throw new RuntimeError("Cannot use 'and' on " + getClass().getSimpleName() + " and " + other.getClass().getSimpleName());
 	}
 	
-	public Primitive<?> or(Primitive<?> other)
+	public BooleanPrimitive or(Primitive<?> other)
 	{
 		throw new RuntimeError("Cannot use 'or' on " + getClass().getSimpleName() + " and " + other.getClass().getSimpleName());
 	}
 	
-	public Primitive<?> not()
+	public BooleanPrimitive not()
 	{
 		throw new RuntimeError("Cannot use 'not' on " + getClass().getSimpleName() + "");
 	}
@@ -110,7 +110,7 @@ public abstract class Primitive<T> {
 	{
 		if (type != this.type)
 		{
-			throw new RuntimeError("Unexpected datatype " + type);
+			throw new RuntimeError("Expected datatype " + type);
 		}
 
 		return (CT) this;

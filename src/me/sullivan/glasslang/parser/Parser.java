@@ -17,6 +17,7 @@ import me.sullivan.glasslang.parser.nodes.FunctionDefinitonNode;
 import me.sullivan.glasslang.parser.nodes.IfNode;
 import me.sullivan.glasslang.parser.nodes.Node;
 import me.sullivan.glasslang.parser.nodes.NumberNode;
+import me.sullivan.glasslang.parser.nodes.StringNode;
 import me.sullivan.glasslang.parser.nodes.UnaryOpNode;
 import me.sullivan.glasslang.parser.nodes.VariableNode;
 import me.sullivan.glasslang.parser.nodes.WhileNode;
@@ -193,6 +194,11 @@ public class Parser {
 		{
 			advance();
 			return new NumberNode(token);
+		}
+		else if (current.getType() == TokenType.STRING)
+		{
+			advance();
+			return new StringNode(token);
 		}
 		else if (current.getType() == TokenType.IDENTIFIER)
 		{
@@ -410,7 +416,6 @@ public class Parser {
 
 		if (current.getType() != TokenType.LAMBDA)
 		{
-			System.out.println(current);
 			throw new InvalidSyntaxError(new TokenType[] { TokenType.LAMBDA });
 		}
 

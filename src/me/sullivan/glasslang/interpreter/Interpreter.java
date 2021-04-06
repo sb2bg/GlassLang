@@ -6,6 +6,7 @@ import java.util.Map;
 import me.sullivan.glasslang.interpreter.primitives.FunctionPrimitive;
 import me.sullivan.glasslang.interpreter.primitives.NumberPrimitive;
 import me.sullivan.glasslang.interpreter.primitives.Primitive;
+import me.sullivan.glasslang.interpreter.primitives.StringPrimitive;
 import me.sullivan.glasslang.interpreter.primitives.Type;
 import me.sullivan.glasslang.interpreter.primitives.VoidPrimitive;
 import me.sullivan.glasslang.interpreter.runtime.Context;
@@ -19,6 +20,7 @@ import me.sullivan.glasslang.parser.nodes.FunctionDefinitonNode;
 import me.sullivan.glasslang.parser.nodes.IfNode;
 import me.sullivan.glasslang.parser.nodes.Node;
 import me.sullivan.glasslang.parser.nodes.NumberNode;
+import me.sullivan.glasslang.parser.nodes.StringNode;
 import me.sullivan.glasslang.parser.nodes.UnaryOpNode;
 import me.sullivan.glasslang.parser.nodes.VariableNode;
 import me.sullivan.glasslang.parser.nodes.WhileNode;
@@ -160,16 +162,12 @@ public class Interpreter {
 
 	public Primitive<?> visitWhileNode(WhileNode node)
 	{
-		while (true)
+		Primitive<?> condition = visitNode(node.getCondition());
+		
+		while (condition.isTrue())
 		{
-			Primitive<?> condition = visitNode(node.getCondition());
-
-			if (!condition.isTrue())
-			{
-				break;
-			}
-
 			visitNode(node.getValue());
+			condition = visitNode(node.getCondition());
 		}
 
 		return new VoidPrimitive();
@@ -194,5 +192,10 @@ public class Interpreter {
 	public Primitive<?> visitCallNode(CallNode node)
 	{
 		return visitNode(node.nodeToCall()).call(node.getArgNodes());
+	}
+
+	public Primitive<?> visitStringNode(StringNode stringNode)
+	{
+		return new StringPrimitive(stringNode.getValue(), context);
 	}
 }

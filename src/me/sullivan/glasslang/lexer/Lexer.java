@@ -13,6 +13,7 @@ public class Lexer {
 
 	private static final char NUL = Character.MIN_VALUE;
 	private static final Map<String, TokenType> TOKENS = new HashMap<>();
+	private static final Map<Character, Character> ESCAPED_CHARS = new HashMap<>();
 	static
 	{
 		TOKENS.put("+", TokenType.PLUS);
@@ -36,7 +37,7 @@ public class Lexer {
 		TOKENS.put("!=", TokenType.NOT_EQUAL);
 		TOKENS.put("==", TokenType.EQUAL_OP);
 		TOKENS.put("=>", TokenType.LAMBDA);
-		
+
 		TOKENS.put("$", TokenType.MONEY_SIGN);
 		TOKENS.put("@", TokenType.AT_SIGN);
 		TOKENS.put("while", TokenType.WHILE);
@@ -51,6 +52,15 @@ public class Lexer {
 		TOKENS.put("end", TokenType.END);
 		TOKENS.put("step", TokenType.STEP);
 		TOKENS.put("to", TokenType.TO);
+
+		ESCAPED_CHARS.put('n', '\n');
+		ESCAPED_CHARS.put('t', '\t');
+		ESCAPED_CHARS.put('b', '\b');
+		ESCAPED_CHARS.put('r', '\r');
+		ESCAPED_CHARS.put('f', '\f');
+		ESCAPED_CHARS.put('\'', '\'');
+		ESCAPED_CHARS.put('"', '"');
+		ESCAPED_CHARS.put('\\', '\\');
 	}
 
 	private final String input;
@@ -138,10 +148,29 @@ public class Lexer {
 	{
 		advance();
 		StringBuilder buffer = new StringBuilder();
+		boolean escaped = false;
 
-		while (current != NUL && !isString())
+		while (current != NUL && (!isString() || escaped))
 		{
-			buffer.append(current);
+			if (escaped)
+			{
+				if (!ESCAPED_CHARS.containsKey(current))
+				{
+					throw new InvalidCharError("Unknown escaped character '" + current + "'", pos);
+				}
+				
+				buffer.append(ESCAPED_CHARS.get(current));
+				escaped = false;
+			}
+			else if (isEscaped())
+			{
+				escaped = true;
+			}
+			else
+			{
+				buffer.append(current);
+			}
+
 			advance();
 		}
 
@@ -153,8 +182,8 @@ public class Lexer {
 		advance();
 		return new Token(TokenType.STRING, buffer.toString());
 	}
-	
-	private String numString()
+
+	private Token consumeNumber()
 	{
 		StringBuilder buffer = new StringBuilder();
 		boolean decimal = false;
@@ -181,12 +210,7 @@ public class Lexer {
 			throw new InvalidCharError("Invalid char " + current, pos);
 		}
 
-		return num;
-	}
-
-	private Token consumeNumber()
-	{
-		return new Token(TokenType.NUMBER, numString());
+		return new Token(TokenType.NUMBER, num);
 	}
 
 	private Token consumeWord()
@@ -235,7 +259,7 @@ public class Lexer {
 	{
 		return current == '.';
 	}
-	
+
 	private boolean isString()
 	{
 		return current == '"';
@@ -245,14 +269,19 @@ public class Lexer {
 	{
 		return "+-*/<>=!".contains(Character.toString(current));
 	}
-	
+
 	private boolean isSingleConsume()
 	{
 		return ",()$@".contains(Character.toString(current));
 	}
-	
+
 	private boolean isUnderscore()
 	{
 		return "_".contains(Character.toString(current));
+	}
+
+	private boolean isEscaped()
+	{
+		return "\\".contains(Character.toString(current));
 	}
 }
