@@ -177,9 +177,9 @@ public class Interpreter {
 		return new VoidPrimitive();
 	}
 
-	public Primitive<?> visitFuncDefinitionNode(FunctionDefinitonNode node)
+	public Primitive<?> visitFuncDefinitionNode(FunctionDefinitionNode node)
 	{
-		String name = node.getToken() != null ? node.getToken().getValue() : null;
+		String name = node.getToken().getValue();
 		Node bodyNode = node.getBody();
 		List<Token> args = node.getArgs();
 
