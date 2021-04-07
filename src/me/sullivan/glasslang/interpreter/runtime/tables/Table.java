@@ -27,8 +27,6 @@ public class Table<C extends Table<C, V>, V> {
 		return parentTable;
 	}
 
-	// TODO search parent tables smh
-	// throw new RuntimeError(MessageFormat.format("{0} is undefined", variable));
 	public V get(String variable)
 	{
 		Table<C, V> search = this;
