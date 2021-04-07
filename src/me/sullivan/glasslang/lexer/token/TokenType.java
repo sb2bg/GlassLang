@@ -8,10 +8,10 @@ public enum TokenType {
 	FOR ("FOR", "'for'"), EQUALS ("EQUALS", "'='"),NOT_EQUAL ("NOT EQUAL", "'!='"), LPAREN ("LPAREN", "'('"), 
 	RPAREN ("RPAREN", "')'"), LESS ("LESS THAN", "'<'"), GREATER ("GREATER THAN", "'>'"), LESS_EQUAL ("LESS THAN EQUAL TO", "'<='"), 
 	POWER("POW", "'**'"), IF ("IF", "'if'"), RETURN ("RETURN", "'return'"), WHILE ("WHILE", "'while'"), AT_SIGN ("AT SIGN", "'@'"), 
-	EQUAL_OP ("EQUAL OPERATOR", "'=='"), LBRACKET ("LEFT SQUARE BRACKET", "["), RBRACKET ("RIGHT SQUARE BRACKET", "]"),
+	EQUAL_OP ("EQUAL OPERATOR", "'=='"), LBRACKET ("LEFT SQUARE BRACKET", "'['"), RBRACKET ("RIGHT SQUARE BRACKET", "']'"),
 	GREATER_EQUAL ("GREATER THAN EQUAL TO", "'>='"), MONEY_SIGN ("MONEY SIGN", "'$'"), COMMA ("COMMA", ",'"), STEP ("STEP", "'step'"),
 	AND ("AND", "'and'"), OR ("OR", "'or'"), NOT ("NOT", "'not'"), ELSE ("ELSE", "'else'"), END ("END", "'end'"), ELIF ("ELIF", "'elif'"), TO ("TO", "'to'"),
-	LAMBDA ("LAMBDA", "'=>'"),
+	LAMBDA ("LAMBDA", "'=>'"), MOD ("MODULUS", "'%'"),
 	
 	EOL ("EndOfLine", null), EOF ("EndOfFile", null);
 	

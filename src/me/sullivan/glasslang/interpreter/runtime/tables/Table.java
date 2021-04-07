@@ -27,11 +27,25 @@ public class Table<C extends Table<C, V>, V> {
 		return parentTable;
 	}
 
+	// TODO search parent tables smh
+	// throw new RuntimeError(MessageFormat.format("{0} is undefined", variable));
 	public V get(String variable)
-	{		
-		if (!table.containsKey(variable))
+	{
+		Table<C, V> search = this;
+
+		while (!search.contains(variable))
 		{
-			throw new RuntimeError(MessageFormat.format("{0} is undefined", variable));
+			if (search.getParentTable() == null)
+			{
+				throw new RuntimeError(MessageFormat.format("{0} is undefined", variable));
+			}
+
+			if (search.getParentTable().contains(variable))
+			{
+				return search.getParentTable().get(variable);
+			}
+
+			search = search.getParentTable();
 		}
 
 		return table.get(variable);
@@ -57,7 +71,7 @@ public class Table<C extends Table<C, V>, V> {
 
 	public boolean contains(String variable)
 	{
-		return table.keySet().contains(variable);
+		return table.containsKey(variable);
 	}
 	
 	private void validate(String toVal)

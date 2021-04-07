@@ -15,13 +15,12 @@ public class Shell {
 
 	private static final Scanner SCANNER = new Scanner(System.in);
 	private static final Context G_CONTEXT = Context.getGlobalContext();
-	private static RunOption runOption;
 
 	// FIXME parent variable tables not setting correctly
 
 	public static void main(String[] args)
 	{
-		runOption = new RunOption(args);
+		RunOption runOption = new RunOption(args);
 		acceptIn();
 
 		while (SCANNER.hasNext())

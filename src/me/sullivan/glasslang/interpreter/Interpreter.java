@@ -1,5 +1,6 @@
 package me.sullivan.glasslang.interpreter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +49,7 @@ public class Interpreter {
 			case NOT_EQUAL -> left.notEqual(right);
 			case AND -> left.and(right);
 			case OR -> left.or(right);
+			case MOD -> left.mod(right);
 			default -> null;
 		};
 	}
@@ -83,6 +85,7 @@ public class Interpreter {
 		return context.getTable().set(node.getToken().getValue(), visitNode(node.getValue()));
 	}
 
+	// FIXME elif not being evaluated correctly?
 	public Primitive<?> visitIfNode(IfNode node)
 	{
 		Map<Node, Node> statements = node.getValue();
@@ -97,8 +100,7 @@ public class Interpreter {
 			{
 				return visitNode(value);
 			}
-
-			if (node.getElseCase() != null)
+			else if (node.getElseCase() != null)
 			{
 				return visitNode(node.getElseCase());
 			}
@@ -114,6 +116,7 @@ public class Interpreter {
 
 	public Primitive<?> visitForNode(ForNode node)
 	{
+		List<Primitive<?>> values = new ArrayList<>();
 		boolean pre = context.getTable().contains(node.getValue());
 		Primitive<?> start = visitNode(node.getStartValue());
 		Primitive<?> end = visitNode(node.getEndValue());
@@ -153,7 +156,7 @@ public class Interpreter {
 			context.getTable().set(node.getValue(), new NumberPrimitive(i, context));
 			i += stepVal.getValue();
 
-			visitNode(node.getEval());
+			values.add(visitNode(node.getEval()));
 		}
 
 		if (!pre)
@@ -161,20 +164,21 @@ public class Interpreter {
 			context.getTable().delete(node.getValue());
 		}
 
-		return new VoidPrimitive();
+		return new ListPrimitive(values, context);
 	}
 
 	public Primitive<?> visitWhileNode(WhileNode node)
 	{
+		List<Primitive<?>> values = new ArrayList<>();
 		Primitive<?> condition = visitNode(node.getCondition());
 
 		while (condition.isTrue())
 		{
-			visitNode(node.getValue());
+			values.add(visitNode(node.getValue()));
 			condition = visitNode(node.getCondition());
 		}
 
-		return new VoidPrimitive();
+		return new ListPrimitive(values, context);
 	}
 
 	public Primitive<?> visitFuncDefinitionNode(FunctionDefinitionNode node)
@@ -205,6 +209,13 @@ public class Interpreter {
 
 	public Primitive<?> visitListNode(ListNode node)
 	{
-		return new ListPrimitive(node.getValue(), context);
+		List<Primitive<?>> list = new ArrayList<>();
+
+		for (Node valNode : node.getValue())
+		{
+			list.add(visitNode(valNode));
+		}
+
+		return new ListPrimitive(list, context);
 	}
 }

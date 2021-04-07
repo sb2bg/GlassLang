@@ -121,7 +121,7 @@ public class Parser
 
     private Node term()
     {
-        return mathOp(this::factor, null, new TokenType[]{TokenType.TIMES, TokenType.DIVIDE});
+        return mathOp(this::factor, null, new TokenType[]{TokenType.TIMES, TokenType.DIVIDE, TokenType.MOD});
     }
 
     private Node factor()
@@ -252,10 +252,6 @@ public class Parser
 
         if (current.getType() != TokenType.RBRACKET)
         {
-            advance();
-        }
-        else
-        {
             expressions.add(expression());
 
             while (current.getType() == TokenType.COMMA)
@@ -269,6 +265,8 @@ public class Parser
                 throw new InvalidSyntaxError(new TokenType[]{TokenType.RBRACKET});
             }
         }
+
+        advance();
 
         return new ListNode(token, expressions);
     }

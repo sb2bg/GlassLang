@@ -30,7 +30,7 @@ public abstract class Primitive<T> {
 		throw new RuntimeError("Cannot add " + getClass().getSimpleName() + " and " + other.getClass().getSimpleName());
 	}
 	
-	public NumberPrimitive min(Primitive<?> other)
+	public Primitive<?> min(Primitive<?> other)
 	{
 		throw new RuntimeError("Cannot subtract " + getClass().getSimpleName() + " and " + other.getClass().getSimpleName());
 	}
@@ -44,7 +44,12 @@ public abstract class Primitive<T> {
 	{
 		throw new RuntimeError("Cannot multiply " + getClass().getSimpleName() + " and " + other.getClass().getSimpleName());
 	}
-	
+
+	public Primitive<?> mod(Primitive<?> other)
+	{
+		throw new RuntimeError("Cannot mod " + getClass().getSimpleName() + " and " + other.getClass().getSimpleName());
+	}
+
 	public NumberPrimitive pow(Primitive<?> other)
 	{
 		throw new RuntimeError("Cannot power " + getClass().getSimpleName() + " and " + other.getClass().getSimpleName());

@@ -11,7 +11,7 @@ class ListNode(token: Token, private var list: List<Node>) : Node(token) {
 
     override fun toString(): String
     {
-        return "List[$list]"
+        return "List{$list}"
     }
 
     override fun visitor(interpreter: Interpreter): Primitive<*>

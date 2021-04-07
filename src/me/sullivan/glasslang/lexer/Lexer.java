@@ -21,6 +21,7 @@ public class Lexer {
 		TOKENS.put("*", TokenType.TIMES);
 		TOKENS.put("/", TokenType.DIVIDE);
 		TOKENS.put("**", TokenType.POWER);
+		TOKENS.put("%", TokenType.MOD);
 		TOKENS.put("=", TokenType.EQUALS);
 		TOKENS.put("(", TokenType.LPAREN);
 		TOKENS.put(")", TokenType.RPAREN);
@@ -269,7 +270,7 @@ public class Lexer {
 
 	private boolean isOperator()
 	{
-		return "+-*/<>=!".contains(Character.toString(current));
+		return "%+-*/<>=!".contains(Character.toString(current));
 	}
 
 	private boolean isSingleConsume()

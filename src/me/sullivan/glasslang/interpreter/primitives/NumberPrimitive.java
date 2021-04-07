@@ -66,6 +66,18 @@ public class NumberPrimitive extends Primitive<Double> {
 	}
 
 	@Override
+	public Primitive<?> mod(Primitive<?> other)
+	{
+		if (other.type == Type.NUMBER)
+		{
+			NumberPrimitive value = other.getValue(Type.NUMBER);
+			return new NumberPrimitive(this.value % value.getValue(), context);
+		}
+
+		throw new RuntimeError("Right hand of operation '%' must be a number");
+	}
+
+	@Override
 	public NumberPrimitive pow(Primitive<?> other)
 	{
 		if (other.type != Type.NUMBER)
