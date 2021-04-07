@@ -3,31 +3,16 @@ package me.sullivan.glasslang.interpreter;
 import java.util.List;
 import java.util.Map;
 
-import me.sullivan.glasslang.interpreter.primitives.FunctionPrimitive;
-import me.sullivan.glasslang.interpreter.primitives.NumberPrimitive;
-import me.sullivan.glasslang.interpreter.primitives.Primitive;
-import me.sullivan.glasslang.interpreter.primitives.StringPrimitive;
-import me.sullivan.glasslang.interpreter.primitives.Type;
-import me.sullivan.glasslang.interpreter.primitives.VoidPrimitive;
+import me.sullivan.glasslang.interpreter.errors.RuntimeError;
+import me.sullivan.glasslang.interpreter.primitives.*;
 import me.sullivan.glasslang.interpreter.runtime.Context;
 import me.sullivan.glasslang.lexer.token.Token;
 import me.sullivan.glasslang.lexer.token.TokenType;
-import me.sullivan.glasslang.parser.nodes.AssignmentNode;
-import me.sullivan.glasslang.parser.nodes.BinOpNode;
-import me.sullivan.glasslang.parser.nodes.CallNode;
-import me.sullivan.glasslang.parser.nodes.ForNode;
-import me.sullivan.glasslang.parser.nodes.FunctionDefinitonNode;
-import me.sullivan.glasslang.parser.nodes.IfNode;
-import me.sullivan.glasslang.parser.nodes.Node;
-import me.sullivan.glasslang.parser.nodes.NumberNode;
-import me.sullivan.glasslang.parser.nodes.StringNode;
-import me.sullivan.glasslang.parser.nodes.UnaryOpNode;
-import me.sullivan.glasslang.parser.nodes.VariableNode;
-import me.sullivan.glasslang.parser.nodes.WhileNode;
+import me.sullivan.glasslang.parser.nodes.*;
 
 public class Interpreter {
 
-	private Context context;
+	private final Context context;
 
 	public Interpreter(Context context)
 	{
@@ -49,23 +34,22 @@ public class Interpreter {
 		Primitive<?> left = visitNode(node.getLeft());
 		Primitive<?> right = visitNode(node.getRight());
 
-		switch (node.getValue().getType())
-		{
-		case PLUS: return left.add(right);
-		case MINUS: return left.min(right);
-		case DIVIDE: return left.div(right);
-		case TIMES: return left.mul(right);
-		case POWER: return left.pow(right);
-		case GREATER: return left.greater(right);
-		case GREATER_EQUAL: return left.greaterEqual(right);
-		case LESS: return left.less(right);
-		case LESS_EQUAL: return left.lessEqual(right);
-		case EQUAL_OP: return left.equal(right);
-		case NOT_EQUAL: return left.notEqual(right);
-		case AND: return left.and(right);
-		case OR: return left.or(right);
-		default: return null;
-		}
+		return switch (node.getValue().getType()) {
+			case PLUS -> left.add(right);
+			case MINUS -> left.min(right);
+			case DIVIDE -> left.div(right);
+			case TIMES -> left.mul(right);
+			case POWER -> left.pow(right);
+			case GREATER -> left.greater(right);
+			case GREATER_EQUAL -> left.greaterEqual(right);
+			case LESS -> left.less(right);
+			case LESS_EQUAL -> left.lessEqual(right);
+			case EQUAL_OP -> left.equal(right);
+			case NOT_EQUAL -> left.notEqual(right);
+			case AND -> left.and(right);
+			case OR -> left.or(right);
+			default -> null;
+		};
 	}
 
 	public Primitive<?> visitNumberNode(NumberNode node)
@@ -131,13 +115,33 @@ public class Interpreter {
 	public Primitive<?> visitForNode(ForNode node)
 	{
 		boolean pre = context.getTable().contains(node.getValue());
-		NumberPrimitive startVal = visitNode(node.getStartValue()).getValue(Type.NUMBER);
-		NumberPrimitive endVal = visitNode(node.getEndValue()).getValue(Type.NUMBER);
-		NumberPrimitive step = new NumberPrimitive(1, context);
+		Primitive<?> start = visitNode(node.getStartValue());
+		Primitive<?> end = visitNode(node.getEndValue());
+
+		if (start.getType() != Type.NUMBER)
+		{
+			throw new RuntimeError("Start value expected to be number");
+		}
+		
+		if (end.getType() != Type.NUMBER)
+		{
+			throw new RuntimeError("End value expected to be number");
+		}
+
+		NumberPrimitive startVal = start.getValue(Type.NUMBER);
+		NumberPrimitive endVal = end.getValue(Type.NUMBER);
+		NumberPrimitive stepVal = new NumberPrimitive(1, context);
 
 		if (node.getStep() != null)
 		{
-			step = visitNode(node.getStep()).getValue(Type.NUMBER);
+			Primitive<?> step = visitNode(node.getStep());
+			
+			if (step.getType() != Type.NUMBER)
+			{
+				throw new RuntimeError("Step value expected to be number");
+			}
+			
+			stepVal = visitNode(node.getStep()).getValue(Type.NUMBER);
 		}
 
 		double i = startVal.getValue();
@@ -147,7 +151,7 @@ public class Interpreter {
 		while (condition.condition(i))
 		{
 			context.getTable().set(node.getValue(), new NumberPrimitive(i, context));
-			i += step.getValue();
+			i += stepVal.getValue();
 
 			visitNode(node.getEval());
 		}
@@ -163,7 +167,7 @@ public class Interpreter {
 	public Primitive<?> visitWhileNode(WhileNode node)
 	{
 		Primitive<?> condition = visitNode(node.getCondition());
-		
+
 		while (condition.isTrue())
 		{
 			visitNode(node.getValue());
@@ -197,5 +201,10 @@ public class Interpreter {
 	public Primitive<?> visitStringNode(StringNode stringNode)
 	{
 		return new StringPrimitive(stringNode.getValue(), context);
+	}
+
+	public Primitive<?> visitListNode(ListNode node)
+	{
+		return new ListPrimitive(node.getValue(), context);
 	}
 }

@@ -60,4 +60,17 @@ public class BooleanPrimitive extends Primitive<Boolean> {
 		
 		return new BooleanPrimitive(this.value == value.getValue(), context);
 	}
+	
+	@Override
+	public Primitive<?> add(Primitive<?> other)
+	{
+		if (other.type != Type.STRING)
+		{
+			throw new RuntimeError("Right hand of operation '+' must be a string");
+		}
+		
+		StringPrimitive value = other.getValue(Type.STRING);
+		
+		return new StringPrimitive(this.value + value.getValue(), context);
+	}
 }

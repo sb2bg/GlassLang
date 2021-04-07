@@ -1,7 +1,6 @@
 package me.sullivan.glasslang.parser;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,24 +8,13 @@ import java.util.Map;
 import me.sullivan.glasslang.lexer.token.Token;
 import me.sullivan.glasslang.lexer.token.TokenType;
 import me.sullivan.glasslang.parser.errors.InvalidSyntaxError;
-import me.sullivan.glasslang.parser.nodes.AssignmentNode;
-import me.sullivan.glasslang.parser.nodes.BinOpNode;
-import me.sullivan.glasslang.parser.nodes.CallNode;
-import me.sullivan.glasslang.parser.nodes.ForNode;
-import me.sullivan.glasslang.parser.nodes.FunctionDefinitonNode;
-import me.sullivan.glasslang.parser.nodes.IfNode;
-import me.sullivan.glasslang.parser.nodes.Node;
-import me.sullivan.glasslang.parser.nodes.NumberNode;
-import me.sullivan.glasslang.parser.nodes.StringNode;
-import me.sullivan.glasslang.parser.nodes.UnaryOpNode;
-import me.sullivan.glasslang.parser.nodes.VariableNode;
-import me.sullivan.glasslang.parser.nodes.WhileNode;
+import me.sullivan.glasslang.parser.nodes.*;
 
 public class Parser {
 
 	private interface NodeMethod
 	{
-		public Node get();
+		Node get();
 	}
 
 	private final List<Token> tokens;
@@ -80,27 +68,32 @@ public class Parser {
 	{
 		if (current.getType() == TokenType.MONEY_SIGN)
 		{
-			advance();
-
-			if (current.getType() != TokenType.IDENTIFIER)
-			{
-				throw new InvalidSyntaxError(new TokenType[] { TokenType.IDENTIFIER });
-			}
-
-			Token identifier = current;
-			advance();
-
-			if (current.getType() != TokenType.EQUALS)
-			{
-				throw new InvalidSyntaxError(new TokenType[] { TokenType.EQUALS });
-			}
-
-			advance();
-
-			return new AssignmentNode(identifier, expression());
+			return new AssignmentNode(assignment(), expression());
 		}
 
-		return mathOp(() -> compExpression(), null, new TokenType[] { TokenType.AND, TokenType.OR });
+		return mathOp(this::compExpression, null, new TokenType[] { TokenType.AND, TokenType.OR });
+	}
+
+	private Token assignment()
+	{
+		advance();
+
+		if (current.getType() != TokenType.IDENTIFIER)
+		{
+			throw new InvalidSyntaxError(new TokenType[] { TokenType.IDENTIFIER });
+		}
+
+		Token identifier = current;
+		advance();
+
+		if (current.getType() != TokenType.EQUALS)
+		{
+			throw new InvalidSyntaxError(new TokenType[] { TokenType.EQUALS });
+		}
+
+		advance();
+
+		return identifier;
 	}
 
 	private Node compExpression()
@@ -113,21 +106,21 @@ public class Parser {
 			return new UnaryOpNode(token, compExpression());
 		}
 
-		return mathOp(() -> arithExpression(), null, new TokenType[] { 
+		return mathOp(this::arithmeticExpression, null, new TokenType[] {
 				TokenType.LESS, TokenType.LESS_EQUAL, 
 				TokenType.GREATER, TokenType.GREATER_EQUAL,
 				TokenType.EQUAL_OP, TokenType.NOT_EQUAL
 		});
 	}
 
-	private Node arithExpression()
+	private Node arithmeticExpression()
 	{
-		return mathOp(() -> term(), null, new TokenType[] { TokenType.PLUS, TokenType.MINUS });
+		return mathOp(this::term, null, new TokenType[] { TokenType.PLUS, TokenType.MINUS });
 	}
 
 	private Node term()
 	{
-		return mathOp(() -> factor(), null, new TokenType[] { TokenType.TIMES, TokenType.DIVIDE });
+		return mathOp(this::factor, null, new TokenType[] { TokenType.TIMES, TokenType.DIVIDE });
 	}
 
 	private Node factor()
@@ -146,7 +139,7 @@ public class Parser {
 
 	private Node power()
 	{
-		return mathOp(() -> call(), () -> factor(), new TokenType[] { TokenType.POWER });
+		return mathOp(this::call, this::factor, new TokenType[] { TokenType.POWER });
 	}
 
 	private Node call()
@@ -158,28 +151,24 @@ public class Parser {
 		{
 			advance();
 
-			if (current.getType() == TokenType.RPAREN)
-			{
-				advance();
-			}
-			else
+			if (current.getType() != TokenType.RPAREN)
 			{
 				argNodes.add(expression());
-				
+
 				while (current.getType() == TokenType.COMMA)
 				{
 					advance();
-					
+
 					argNodes.add(expression());
 				}
-				
-				if (current.getType() != TokenType.RPAREN)
-				{
-					throw new InvalidSyntaxError(new TokenType[] { TokenType.RPAREN });
+
+				if (current.getType() != TokenType.RPAREN) {
+					throw new InvalidSyntaxError(new TokenType[]{TokenType.RPAREN});
 				}
-				advance();
 			}
-			
+
+			advance();
+
 			return new CallNode(atom, argNodes);
 		}
 		
@@ -220,6 +209,10 @@ public class Parser {
 				throw new InvalidSyntaxError(new TokenType[] { TokenType.LPAREN });
 			}
 		}
+		else if (current.getType() == TokenType.LBRACKET)
+		{
+			return listExpression();
+		}
 		else if (current.getType() == TokenType.IF)
 		{
 			return ifExpression();
@@ -242,10 +235,23 @@ public class Parser {
 				TokenType.MINUS, TokenType.LPAREN });
 	}
 
+	private Node listExpression()
+	{
+		if (current.getType() != TokenType.LBRACKET)
+		{
+			throw new InvalidSyntaxError(new TokenType[] { TokenType.LBRACKET });
+		}
+
+		advance();
+
+		List<Node> expressions = new ArrayList<>();
+
+		return new ListNode(expressions);
+	}
+
 	private Node ifExpression()
 	{
 		Map<Node, Node> cases = new HashMap<>();
-		Node elseCase = null;
 
 		if (current.getType() != TokenType.IF)
 		{
@@ -277,6 +283,8 @@ public class Parser {
 			cases.put(condition, expression());
 		}
 
+		Node elseCase = null;
+
 		if (current.getType() == TokenType.ELSE)
 		{
 			advance();
@@ -293,22 +301,7 @@ public class Parser {
 			throw new InvalidSyntaxError(new TokenType[] { TokenType.FOR });
 		}
 
-		advance();
-
-		if (current.getType() != TokenType.IDENTIFIER)
-		{
-			throw new InvalidSyntaxError(new TokenType[] { TokenType.IDENTIFIER });
-		}
-
-		Token variable = current;
-		advance();
-
-		if (current.getType() != TokenType.EQUALS)
-		{
-			throw new InvalidSyntaxError(new TokenType[] { TokenType.EQUALS });
-		}
-
-		advance();
+		Token variable = assignment();
 		Node startVal = expression();
 
 		if (current.getType() != TokenType.TO)
@@ -424,16 +417,14 @@ public class Parser {
 		return new FunctionDefinitonNode(func, args, expression());
 	}
 
-	private Token advance()
+	private void advance()
 	{
 		index++;
 		current = index >= tokens.size() ? current : tokens.get(index);
-
-		return current;
 	}
 
 	private boolean isMatch(TokenType[] types)
 	{
-		return Arrays.stream(types).anyMatch(current.getType()::equals);
+		return List.of(types).contains(current.getType());
 	}
 }

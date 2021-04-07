@@ -120,4 +120,9 @@ public abstract class Primitive<T> {
 	{
 		return value != null ? value.toString() : "void";
 	}
+	
+	public Type getType()
+	{
+		return type;
+	}
 }
