@@ -1,7 +1,9 @@
 package me.sullivan.glasslang.interpreter.primitives;
 
 import java.util.List;
+import java.util.Objects;
 
+import me.sullivan.glasslang.interpreter.Interpreter;
 import me.sullivan.glasslang.interpreter.errors.RuntimeError;
 import me.sullivan.glasslang.interpreter.runtime.Context;
 import me.sullivan.glasslang.parser.nodes.Node;
@@ -77,7 +79,7 @@ public abstract class Primitive<T> {
 	
 	public BooleanPrimitive equal(Primitive<?> other)
 	{
-		throw new RuntimeError("Cannot compare " + getClass().getSimpleName() + " and " + other.getClass().getSimpleName());
+		return new BooleanPrimitive(this.equals(other), context);
 	}
 	
 	public BooleanPrimitive notEqual(Primitive<?> other)
@@ -129,5 +131,26 @@ public abstract class Primitive<T> {
 	public Type getType()
 	{
 		return type;
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		Primitive<?> primitive = (Primitive<?>) o;
+		return value.equals(primitive.value) && type == primitive.type;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(value, type);
 	}
 }

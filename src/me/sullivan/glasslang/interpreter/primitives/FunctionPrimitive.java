@@ -12,8 +12,8 @@ import me.sullivan.glasslang.parser.nodes.Node;
 
 public class FunctionPrimitive extends Primitive<Node> {
 
-	private String name;
-	private List<Token> args;
+	private final String name;
+	private final List<Token> args;
 	
 	public FunctionPrimitive(String name, Node body, List<Token> args, Context context)
 	{
@@ -21,10 +21,19 @@ public class FunctionPrimitive extends Primitive<Node> {
 		this.name = name;
 		this.args = args;
 	}
-	
+
+	// FIXME Doesn't work
+	// {
+	//	 @func(otherFunc, a) => otherFunc(a)
+	//
+	//	 @test(a) => a
+	//
+	//	 func(test, 1)
+	// }
 	@Override
 	public Primitive<?> call(List<Node> argNodes)
 	{
+		System.out.println("Old context, parent: " + context.getTable());
 		Interpreter interpreter = new Interpreter(new Context(context, MessageFormat.format("func<{0}>", name), new VariableTable(context.getTable())));
 		
 		int passed = args.size();
@@ -41,6 +50,7 @@ public class FunctionPrimitive extends Primitive<Node> {
 			Node argValue = argNodes.get(i);
 			interpreter.currentContext().getTable().set(argName.getValue(), interpreter.visitNode(argValue));
 		}
+		System.out.println("New context: " + interpreter.currentContext().getTable());
 		
 		return interpreter.visitNode(value);
 	}

@@ -85,7 +85,6 @@ public class Interpreter {
 		return context.getTable().set(node.getToken().getValue(), visitNode(node.getValue()));
 	}
 
-	// FIXME elif not being evaluated correctly?
 	public Primitive<?> visitIfNode(IfNode node)
 	{
 		Map<Node, Node> statements = node.getValue();
@@ -105,6 +104,13 @@ public class Interpreter {
 				return visitNode(node.getElseCase());
 			}
 		}
+
+		return new VoidPrimitive();
+	}
+
+	public Primitive<?> visitImportNode(ImportNode importNode)
+	{
+
 
 		return new VoidPrimitive();
 	}
@@ -149,7 +155,7 @@ public class Interpreter {
 
 		double i = startVal.getValue();
 
-		Condition condition = i >= 0 ? val -> val <= endVal.getValue() : val -> val >= endVal.getValue();
+		Condition condition = i >= 0 ? val -> val < endVal.getValue() : val -> val > endVal.getValue();
 
 		while (condition.condition(i))
 		{

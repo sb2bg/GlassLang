@@ -49,19 +49,6 @@ public class BooleanPrimitive extends Primitive<Boolean> {
 	}
 	
 	@Override
-	public BooleanPrimitive equal(Primitive<?> other)
-	{
-		if (other.type != Type.BOOLEAN)
-		{
-			return new BooleanPrimitive(false, context);
-		}
-		
-		BooleanPrimitive value = other.getValue(Type.BOOLEAN);
-		
-		return new BooleanPrimitive(this.value == value.getValue(), context);
-	}
-	
-	@Override
 	public Primitive<?> add(Primitive<?> other)
 	{
 		if (other.type != Type.STRING)

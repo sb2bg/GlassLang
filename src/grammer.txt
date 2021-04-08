@@ -18,6 +18,7 @@ call					: atom (LPAREN (expr (COMMA expr)*)? RPAREN)?
 atom 					: INT|FLOAT|STRING|IDENTIFIER
 						: LPAREN expr RPAREN
 						: list-expr
+						: import-expr
 						: if-expr
 						: for-expr
 						: while-expr

@@ -10,11 +10,11 @@ public enum TokenType {
 	POWER("POW", "'**'"), IF ("IF", "'if'"), RETURN ("RETURN", "'return'"), WHILE ("WHILE", "'while'"), AT_SIGN ("AT SIGN", "'@'"), 
 	EQUAL_OP ("EQUAL OPERATOR", "'=='"), LBRACKET ("LEFT SQUARE BRACKET", "'['"), RBRACKET ("RIGHT SQUARE BRACKET", "']'"),
 	GREATER_EQUAL ("GREATER THAN EQUAL TO", "'>='"), MONEY_SIGN ("MONEY SIGN", "'$'"), COMMA ("COMMA", ",'"), STEP ("STEP", "'step'"),
-	AND ("AND", "'and'"), OR ("OR", "'or'"), NOT ("NOT", "'not'"), ELSE ("ELSE", "'else'"), END ("END", "'end'"), ELIF ("ELIF", "'elif'"), TO ("TO", "'to'"),
-	LAMBDA ("LAMBDA", "'=>'"), MOD ("MODULUS", "'%'"),
+	AND ("AND", "'and'"), OR ("OR", "'or'"), NOT ("NOT", "'not'"), ELSE ("ELSE", "'else'"), END ("END", "'end'"), TO ("TO", "'to'"),
+	LAMBDA ("LAMBDA", "'=>'"), MOD ("MODULUS", "'%'"), IMPORT ("IMPORT", "'&'"), PERIOD ("PERIOD", "'.'"),
 	
 	EOL ("EndOfLine", null), EOF ("EndOfFile", null);
-	
+
 	private final String name;
 	private final String rep;
 	

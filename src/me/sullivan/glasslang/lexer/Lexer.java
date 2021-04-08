@@ -17,11 +17,13 @@ public class Lexer {
 	static
 	{
 		TOKENS.put("+", TokenType.PLUS);
+		TOKENS.put(".", TokenType.PERIOD);
 		TOKENS.put("-", TokenType.MINUS);
 		TOKENS.put("*", TokenType.TIMES);
 		TOKENS.put("/", TokenType.DIVIDE);
 		TOKENS.put("**", TokenType.POWER);
 		TOKENS.put("%", TokenType.MOD);
+		TOKENS.put("&", TokenType.IMPORT);
 		TOKENS.put("=", TokenType.EQUALS);
 		TOKENS.put("(", TokenType.LPAREN);
 		TOKENS.put(")", TokenType.RPAREN);
@@ -51,7 +53,6 @@ public class Lexer {
 		TOKENS.put("or", TokenType.OR);
 		TOKENS.put("not", TokenType.NOT);
 		TOKENS.put("else", TokenType.ELSE);
-		TOKENS.put("elif", TokenType.ELIF);
 		TOKENS.put("end", TokenType.END);
 		TOKENS.put("step", TokenType.STEP);
 		TOKENS.put("to", TokenType.TO);
@@ -275,7 +276,7 @@ public class Lexer {
 
 	private boolean isSingleConsume()
 	{
-		return ",()$@[]".contains(Character.toString(current));
+		return "./&,()$@[]".contains(Character.toString(current));
 	}
 
 	private boolean isUnderscore()

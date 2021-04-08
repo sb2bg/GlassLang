@@ -138,18 +138,6 @@ public class NumberPrimitive extends Primitive<Double> {
 	}
 
 	@Override
-	public BooleanPrimitive equal(Primitive<?> other)
-	{
-		if (other.type != Type.NUMBER)
-		{
-			return new BooleanPrimitive(false, context);
-		}
-
-		NumberPrimitive value = other.getValue(Type.NUMBER);
-		return new BooleanPrimitive(this.value.equals(value.getValue()), context);
-	}
-
-	@Override
 	public BooleanPrimitive notEqual(Primitive<?> other)
 	{
 		return equal(other).not();

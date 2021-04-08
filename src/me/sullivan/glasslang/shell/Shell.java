@@ -16,8 +16,6 @@ public class Shell {
 	private static final Scanner SCANNER = new Scanner(System.in);
 	private static final Context G_CONTEXT = Context.getGlobalContext();
 
-	// FIXME parent variable tables not setting correctly
-
 	public static void main(String[] args)
 	{
 		RunOption runOption = new RunOption(args);

@@ -30,7 +30,7 @@ public class ListPrimitive extends Primitive<List<Primitive<?>>>
             value.add(other);
         }
 
-        return new ListPrimitive(this.value, context);
+        return this;
     }
 
     @Override
@@ -51,7 +51,7 @@ public class ListPrimitive extends Primitive<List<Primitive<?>>>
 
         this.value.remove(num);
 
-        return new ListPrimitive(this.value, context);
+        return this;
     }
 
     @Override
@@ -62,7 +62,7 @@ public class ListPrimitive extends Primitive<List<Primitive<?>>>
             throw new RuntimeError("Expected one argument");
         }
 
-        Interpreter interpreter = new Interpreter(new Context(context, MessageFormat.format("func<{0}>", "ind-get"), new VariableTable(context.getTable())));
+        Interpreter interpreter = new Interpreter(new Context(context, MessageFormat.format("func<{0}>", "get-list.index"), new VariableTable(context.getTable())));
         Primitive<?> index = interpreter.visitNode(argNodes.get(0));
 
         if (index.getType() != Type.NUMBER)
@@ -78,6 +78,6 @@ public class ListPrimitive extends Primitive<List<Primitive<?>>>
             throw new RuntimeError(MessageFormat.format("Index {0} out of bounds for range {1}", value, this.value.size()));
         }
 
-        return this.value.get(indexNum.getValue().intValue());
+        return this.value.get(value);
     }
 }

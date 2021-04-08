@@ -211,6 +211,10 @@ public class Parser
                 throw new InvalidSyntaxError(new TokenType[]{TokenType.LPAREN});
             }
         }
+        else if (current.getType() == TokenType.IMPORT)
+        {
+            return importExpression();
+        }
         else if (current.getType() == TokenType.LBRACKET)
         {
             return listExpression();
@@ -235,6 +239,31 @@ public class Parser
         throw new InvalidSyntaxError(new TokenType[]{
                 TokenType.NUMBER, TokenType.IDENTIFIER, TokenType.PLUS,
                 TokenType.MINUS, TokenType.LPAREN});
+    }
+
+    // TODO implement import
+    // import "module" => module (maybe just add functions to importing class instead of importing classes?)
+    // import "module2" => module2
+    // OR
+    // import ("module" => module, "module2" => module2)
+    private Node importExpression()
+    {
+        if (current.getType() != TokenType.IMPORT)
+        {
+            throw new InvalidSyntaxError(new TokenType[]{TokenType.IMPORT});
+        }
+
+        advance();
+
+        if (current.getType() != TokenType.STRING)
+        {
+            throw new InvalidSyntaxError(new TokenType[]{TokenType.STRING});
+        }
+
+        Token string = current;
+        advance();
+
+        return new ImportNode(string);
     }
 
     private Node listExpression()
@@ -273,6 +302,7 @@ public class Parser
 
     private Node ifExpression()
     {
+        Token token = current;
         Map<Node, Node> cases = new HashMap<>();
 
         if (current.getType() != TokenType.IF)
@@ -291,20 +321,6 @@ public class Parser
         advance();
         cases.put(condition, expression());
 
-        while (current.getType() == TokenType.ELIF)
-        {
-            advance();
-            condition = expression();
-
-            if (current.getType() != TokenType.LAMBDA)
-            {
-                throw new InvalidSyntaxError(new TokenType[]{TokenType.ELIF});
-            }
-
-            advance();
-            cases.put(condition, expression());
-        }
-
         Node elseCase = null;
 
         if (current.getType() == TokenType.ELSE)
@@ -313,7 +329,7 @@ public class Parser
             elseCase = expression();
         }
 
-        return new IfNode(new Token(TokenType.IF), cases, elseCase);
+        return new IfNode(token, cases, elseCase);
     }
 
     private Node forExpression()
