@@ -4,8 +4,8 @@ import me.sullivan.glasslang.interpreter.Interpreter;
 import me.sullivan.glasslang.interpreter.primitives.Primitive;
 import me.sullivan.glasslang.lexer.token.Token;
 
-public class ForNode extends Node {
-
+public class ForNode extends Node
+{
     private Node startValue;
     private Node endValue;
     private Node step;

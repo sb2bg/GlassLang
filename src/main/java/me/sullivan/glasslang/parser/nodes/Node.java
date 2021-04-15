@@ -4,7 +4,8 @@ import me.sullivan.glasslang.interpreter.Interpreter;
 import me.sullivan.glasslang.interpreter.primitives.Primitive;
 import me.sullivan.glasslang.lexer.token.Token;
 
-public abstract class Node {
+public abstract class Node
+{
 
     protected Token token;
 

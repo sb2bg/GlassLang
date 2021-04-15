@@ -261,8 +261,6 @@ public class Parser
 
     private Node listExpression()
     {
-        Token token = current;
-
         if (current.getType() != TokenType.LBRACKET)
         {
             throw new InvalidSyntaxError(new TokenType[]{TokenType.LBRACKET});
@@ -360,8 +358,6 @@ public class Parser
 
     private Node whileExpression()
     {
-        Token token = current;
-
         if (current.getType() != TokenType.WHILE)
         {
             throw new InvalidSyntaxError(new TokenType[]{TokenType.WHILE});

@@ -11,36 +11,37 @@ import me.sullivan.glasslang.parser.nodes.Node;
 import java.util.List;
 import java.util.Scanner;
 
-public class Shell {
+public class Shell
+{
+    private static final Scanner SCANNER = new Scanner(System.in);
+    private static final Context G_CONTEXT = Context.getGlobalContext();
 
-	private static final Scanner SCANNER = new Scanner(System.in);
-	private static final Context G_CONTEXT = Context.getGlobalContext();
+    public static void main(String[] args)
+    {
+        RunOption runOption = new RunOption(args);
+        acceptIn();
 
-	public static void main(String[] args)
-	{
-		RunOption runOption = new RunOption(args);
-		acceptIn();
+        while (SCANNER.hasNext())
+        {
+            String current = SCANNER.nextLine();
 
-		while (SCANNER.hasNext())
-		{
-			String current = SCANNER.nextLine();
+            List<Token> tokens = new Lexer(current).lex();
+            runOption.printLex(tokens);
 
-			List<Token> tokens = new Lexer(current).lex();
-			runOption.printLex(tokens);
 
-			Node node = new Parser(tokens).parse();
-			runOption.printParse(node);
+            Node node = new Parser(tokens).parse();
+            runOption.printParse(node);
 
-			Primitive<?> result = new Interpreter(G_CONTEXT).visitNode(node);
-			runOption.printInt(result);
+            Primitive<?> result = new Interpreter(G_CONTEXT).visitNode(node);
+            runOption.printInt(result);
 
-			acceptIn();
-		}
-	}
+            acceptIn();
+        }
+    }
 
-	// TEMP no need once parsing text files
-	private static void acceptIn()
-	{
-		System.out.print("GLang >>> ");
-	}
+    // TEMP no need once parsing text files
+    private static void acceptIn()
+    {
+        System.out.print("GLang >>> ");
+    }
 }

@@ -4,8 +4,8 @@ import me.sullivan.glasslang.interpreter.Interpreter;
 import me.sullivan.glasslang.interpreter.primitives.Primitive;
 import me.sullivan.glasslang.lexer.token.Token;
 
-public class BinOpNode extends Node {
-
+public class BinOpNode extends Node
+{
     private Node left;
     private Node right;
 

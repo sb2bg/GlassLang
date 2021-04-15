@@ -19,10 +19,9 @@ public class ListPrimitive extends Primitive<List<Primitive<?>>>
     @Override
     public Primitive<?> add(Primitive<?> other)
     {
-        if (other.type == Type.LIST)
+        if (other.getType() == Type.LIST)
         {
-            ListPrimitive value = other.getValue(Type.LIST);
-            this.value.addAll(value.getValue());
+            value.addAll(Primitive.<ListPrimitive>cast(other).getValue());
         }
         else
         {
@@ -35,21 +34,12 @@ public class ListPrimitive extends Primitive<List<Primitive<?>>>
     @Override
     public Primitive<?> min(Primitive<?> other)
     {
-        if (other.type != Type.NUMBER)
-        {
-            throw new RuntimeError("Expected number to be passed, not" + other.getType(), context);
-        }
+        NumberPrimitive otherValue = other.getValue(Type.NUMBER);
 
-        NumberPrimitive value = other.getValue(Type.NUMBER);
-        int num = value.getValue().intValue();
+        int index = otherValue.getValue().intValue();
+        index = index < 0 ? value.size() + index : index;
 
-        if (num < 0)
-        {
-            num = this.value.size() + num;
-        }
-
-        this.value.remove(num);
-
+        value.remove(index);
         return this;
     }
 
@@ -62,21 +52,14 @@ public class ListPrimitive extends Primitive<List<Primitive<?>>>
         }
 
         Interpreter interpreter = new Interpreter(new Context(context, MessageFormat.format("func<{0}>", "get-list.index")));
-        Primitive<?> index = interpreter.visitNode(argNodes.get(0));
+        NumberPrimitive otherValue = interpreter.visitNode(argNodes.get(0)).getValue(Type.NUMBER);
+        int index = otherValue.getValue().intValue();
 
-        if (index.getType() != Type.NUMBER)
+        if (index >= value.size() || index < 0)
         {
-            throw new RuntimeError("Expected number, not " + index.getType(), context);
+            throw new RuntimeError(MessageFormat.format("Index {0} out of bounds for range {1}", index, value.size()), context);
         }
 
-        NumberPrimitive indexNum = index.getValue(Type.NUMBER);
-        int value = indexNum.getValue().intValue();
-
-        if (value >= this.value.size() || value < 0)
-        {
-            throw new RuntimeError(MessageFormat.format("Index {0} out of bounds for range {1}", value, this.value.size()), context);
-        }
-
-        return this.value.get(value);
+        return value.get(index);
     }
 }

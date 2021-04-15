@@ -5,10 +5,11 @@ import me.sullivan.glasslang.interpreter.primitives.Primitive;
 import me.sullivan.glasslang.lexer.token.Token;
 import org.javatuples.Pair;
 
-public class IfNode extends Node {
+public class IfNode extends Node
+{
 
-    private Pair<Node, Node> ifCase;
-    private Node elseCase;
+    private final Pair<Node, Node> ifCase;
+    private final Node elseCase;
 
     public IfNode(Token token, Pair<Node, Node> ifCase, Node elseCase)
     {

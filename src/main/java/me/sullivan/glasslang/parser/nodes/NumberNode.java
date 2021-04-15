@@ -4,7 +4,8 @@ import me.sullivan.glasslang.interpreter.Interpreter;
 import me.sullivan.glasslang.interpreter.primitives.Primitive;
 import me.sullivan.glasslang.lexer.token.Token;
 
-public class NumberNode extends Node {
+public class NumberNode extends Node
+{
 
     public NumberNode(Token token)
     {

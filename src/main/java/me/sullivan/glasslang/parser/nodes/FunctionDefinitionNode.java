@@ -6,7 +6,8 @@ import me.sullivan.glasslang.lexer.token.Token;
 
 import java.util.List;
 
-public class FunctionDefinitionNode extends Node {
+public class FunctionDefinitionNode extends Node
+{
 
     private final List<Token> args;
     private final Node body;

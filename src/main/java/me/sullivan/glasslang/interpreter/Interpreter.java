@@ -1,6 +1,5 @@
 package me.sullivan.glasslang.interpreter;
 
-import me.sullivan.glasslang.interpreter.errors.RuntimeError;
 import me.sullivan.glasslang.interpreter.primitives.*;
 import me.sullivan.glasslang.interpreter.runtime.Context;
 import me.sullivan.glasslang.lexer.token.Token;
@@ -13,11 +12,6 @@ import java.util.List;
 
 public record Interpreter(Context context)
 {
-    public Context currentContext()
-    {
-        return context;
-    }
-
     public Primitive<?> visitNode(Node node)
     {
         return node.visitor(this);
@@ -106,38 +100,13 @@ public record Interpreter(Context context)
     {
         List<Primitive<?>> values = new ArrayList<>();
         boolean pre = context.getTable().contains(node.getValue());
-        Primitive<?> start = visitNode(node.getStartValue());
-        Primitive<?> end = visitNode(node.getEndValue());
 
-        if (start.getType() != Type.NUMBER)
-        {
-            throw new RuntimeError("Start value expected to be number", context);
-        }
+        NumberPrimitive start = visitNode(node.getStartValue()).getValue(Type.NUMBER);
+        NumberPrimitive end = visitNode(node.getEndValue()).getValue(Type.NUMBER);
+        NumberPrimitive stepVal = node.getStep() == null ? new NumberPrimitive(1, context) : visitNode(node.getStep()).getValue(Type.NUMBER);
 
-        if (end.getType() != Type.NUMBER)
-        {
-            throw new RuntimeError("End value expected to be number", context);
-        }
-
-        NumberPrimitive startVal = start.getValue(Type.NUMBER);
-        NumberPrimitive endVal = end.getValue(Type.NUMBER);
-        NumberPrimitive stepVal = new NumberPrimitive(1, context);
-
-        if (node.getStep() != null)
-        {
-            Primitive<?> step = visitNode(node.getStep());
-
-            if (step.getType() != Type.NUMBER)
-            {
-                throw new RuntimeError("Step value expected to be number", context);
-            }
-
-            stepVal = visitNode(node.getStep()).getValue(Type.NUMBER);
-        }
-
-        double i = startVal.getValue();
-
-        Condition condition = i >= 0 ? val -> val < endVal.getValue() : val -> val > endVal.getValue();
+        double i = start.getValue();
+        Condition condition = i >= 0 ? val -> val < end.getValue() : val -> val > end.getValue();
 
         while (condition.condition(i))
         {

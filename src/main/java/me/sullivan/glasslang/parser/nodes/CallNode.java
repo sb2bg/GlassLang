@@ -5,7 +5,8 @@ import me.sullivan.glasslang.interpreter.primitives.Primitive;
 
 import java.util.List;
 
-public class CallNode extends Node {
+public class CallNode extends Node
+{
 
     private final Node atom;
     private final List<Node> argNodes;
