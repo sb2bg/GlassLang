@@ -13,8 +13,7 @@ public class Context
     public enum Keyword
     {
         TRUE("true"), FALSE("false"), STRING("str"), NUMBER("num"), LIST("list"), FUNCTION("func"), TYPE("type"),
-        BOOLEAN("bool"), IS("is"), PRINT("print"), PRINTLN("println"), STR_INPUT("strInput"), NUM_INPUT("numInput"),
-        VOID("void");
+        BOOLEAN("bool"), VOID("void");
 
         private final String keyword;
 
@@ -29,27 +28,26 @@ public class Context
         }
     }
 
-    private static final HashMap<Keyword, Primitive<?>> DEFAULTS = new HashMap<>();
+    private static final HashMap<String, Primitive<?>> DEFAULTS = new HashMap<>();
 
     static
     {
-        DEFAULTS.put(Keyword.IS, new BuiltInFunction(Keyword.IS.getKeyword()));
-        DEFAULTS.put(Keyword.PRINT, new BuiltInFunction(Keyword.PRINT.getKeyword()));
-        DEFAULTS.put(Keyword.PRINTLN, new BuiltInFunction(Keyword.PRINTLN.getKeyword()));
-        DEFAULTS.put(Keyword.STR_INPUT, new BuiltInFunction(Keyword.STR_INPUT.getKeyword()));
-        DEFAULTS.put(Keyword.NUM_INPUT, new BuiltInFunction(Keyword.NUM_INPUT.getKeyword()));
+        for (String name : BuiltInFunction.getBuiltInNames())
+        {
+            DEFAULTS.put(name, new BuiltInFunction(name));
+        }
 
-        DEFAULTS.put(Keyword.FALSE, new BooleanPrimitive(false, null));
-        DEFAULTS.put(Keyword.STRING, new TypePrimitive(Type.STRING, null));
-        DEFAULTS.put(Keyword.NUMBER, new TypePrimitive(Type.NUMBER, null));
-        DEFAULTS.put(Keyword.LIST, new TypePrimitive(Type.LIST, null));
-        DEFAULTS.put(Keyword.FUNCTION, new TypePrimitive(Type.FUNCTION, null));
-        DEFAULTS.put(Keyword.TYPE, new TypePrimitive(Type.TYPE, null));
-        DEFAULTS.put(Keyword.BOOLEAN, new TypePrimitive(Type.BOOLEAN, null));
+        DEFAULTS.put(Keyword.STRING.getKeyword(), new TypePrimitive(Type.STRING, null));
+        DEFAULTS.put(Keyword.NUMBER.getKeyword(), new TypePrimitive(Type.NUMBER, null));
+        DEFAULTS.put(Keyword.LIST.getKeyword(), new TypePrimitive(Type.LIST, null));
+        DEFAULTS.put(Keyword.FUNCTION.getKeyword(), new TypePrimitive(Type.FUNCTION, null));
+        DEFAULTS.put(Keyword.TYPE.getKeyword(), new TypePrimitive(Type.TYPE, null));
+        DEFAULTS.put(Keyword.BOOLEAN.getKeyword(), new TypePrimitive(Type.BOOLEAN, null));
 
-        DEFAULTS.put(Keyword.TRUE, new BooleanPrimitive(true, null));
+        DEFAULTS.put(Keyword.TRUE.getKeyword(), new BooleanPrimitive(true, null));
+        DEFAULTS.put(Keyword.FALSE.getKeyword(), new BooleanPrimitive(false, null));
 
-        DEFAULTS.put(Keyword.VOID, new VoidPrimitive());
+        DEFAULTS.put(Keyword.VOID.getKeyword(), new VoidPrimitive());
     }
 
     private static final Context GLOBAL = new Context("<gls-main>", createGlobalTable());
@@ -58,9 +56,9 @@ public class Context
     {
         VariableTable table = new VariableTable();
 
-        for (Keyword keyword : DEFAULTS.keySet())
+        for (String keyword : DEFAULTS.keySet())
         {
-            table.inject(keyword.getKeyword(), DEFAULTS.get(keyword));
+            table.inject(keyword, DEFAULTS.get(keyword));
         }
 
         return table;
@@ -73,11 +71,7 @@ public class Context
 
     public static Set<String> getDefaults()
     {
-        Set<String> defaults = new HashSet<>();
-
-        DEFAULTS.keySet().forEach(key -> defaults.add(key.getKeyword()));
-
-        return defaults;
+        return new HashSet<>(DEFAULTS.keySet());
     }
 
     protected Context parent;

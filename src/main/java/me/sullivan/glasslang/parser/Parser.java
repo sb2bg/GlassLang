@@ -238,7 +238,7 @@ public class Parser
     // import "module" => module (maybe just add functions to importing class instead of importing classes?)
     // import "module2" => module2
     // OR
-    // import ("module" => module, "module2" => module2)
+    // import ("module" => module, "module2" => whateverModule2)
     private Node importExpression()
     {
         if (current.getType() != TokenType.IMPORT)

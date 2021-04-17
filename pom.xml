@@ -7,6 +7,8 @@
     <groupId>me.sullivan</groupId>
     <artifactId>GlassLang</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
     <build>
         <plugins>
             <plugin>
@@ -16,6 +18,9 @@
                 <configuration>
                     <source>16</source>
                     <target>16</target>
+                    <compilerArgs>
+                        --enable-preview
+                    </compilerArgs>
                 </configuration>
             </plugin>
         </plugins>

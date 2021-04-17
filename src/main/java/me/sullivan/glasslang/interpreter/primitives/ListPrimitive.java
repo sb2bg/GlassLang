@@ -7,6 +7,7 @@ import me.sullivan.glasslang.parser.nodes.Node;
 
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 public class ListPrimitive extends Primitive<List<Primitive<?>>>
 {

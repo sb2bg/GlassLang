@@ -1,11 +1,9 @@
 package me.sullivan.glasslang.interpreter.primitives;
 
-import me.sullivan.glasslang.interpreter.Interpreter;
 import me.sullivan.glasslang.interpreter.runtime.Context;
 import me.sullivan.glasslang.lexer.token.Token;
 import me.sullivan.glasslang.parser.nodes.Node;
 
-import java.text.MessageFormat;
 import java.util.List;
 
 public class FunctionPrimitive extends FunctionBasePrimitive
@@ -17,11 +15,11 @@ public class FunctionPrimitive extends FunctionBasePrimitive
 
     // FIXME Doesn't work :(
     // {
-    //	 @func(otherFunc, a) => otherFunc(a)
+    //	 @def(otherFunc, a) => otherFunc(a)
     //
     //	 @test(a) => a
     //
-    //	 func(test, 1)
+    //	 def(test, 1)
     // }
     @Override
     public Primitive<?> call(List<Node> argNodes)

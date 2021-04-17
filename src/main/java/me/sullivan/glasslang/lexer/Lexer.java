@@ -127,6 +127,8 @@ public class Lexer
             }
         }
 
+        tokens.add(new Token(TokenType.EOL));
+
         return tokens;
     }
 

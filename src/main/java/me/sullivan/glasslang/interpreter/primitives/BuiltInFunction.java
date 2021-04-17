@@ -12,7 +12,7 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class BuiltInFunction extends FunctionPrimitive
+public class BuiltInFunction extends FunctionBasePrimitive
 {
     public BuiltInFunction(String name)
     {
@@ -33,7 +33,15 @@ public class BuiltInFunction extends FunctionPrimitive
         builtIns.put("strInput", new Pair<>(BuiltInFunction::strInput, new String[]{}));
         builtIns.put("numInput", new Pair<>(BuiltInFunction::numInput, new String[]{}));
         builtIns.put("is", new Pair<>(BuiltInFunction::is, new String[]{"left", "right"}));
+        builtIns.put("length", new Pair<>(BuiltInFunction::length, new String[]{"value"}));
+        builtIns.put("randInt", new Pair<>(BuiltInFunction::randInt, new String[]{"value"}));
+        builtIns.put("randFloat", new Pair<>(BuiltInFunction::randFloat, new String[]{"value"}));
         // TODO add math functions, and others such as "in"
+    }
+
+    public static Set<String> getBuiltInNames()
+    {
+        return builtIns.keySet();
     }
 
     private static Primitive<?> print(Context context, List<Token> args)
@@ -68,9 +76,52 @@ public class BuiltInFunction extends FunctionPrimitive
     private static Primitive<?> is(Context context, List<Token> args)
     {
         Primitive<?> left = fromTable(0, args, context);
-        TypePrimitive right = fromTable(1, args, context).getValue(Type.TYPE);
+        Primitive<?> right = fromTable(1, args, context);
 
-        return right.is(left);
+        if (right.getType() == Type.TYPE)
+        {
+            TypePrimitive other = right.getValue(Type.TYPE);
+            return other.is(left);
+        }
+        else if (right.getType() == Type.LIST)
+        {
+            List<Primitive<?>> other = right.getValue(Type.LIST);
+
+            if (other.contains(left))
+            {
+                return new BooleanPrimitive(true, context);
+            }
+
+            return new BooleanPrimitive(false, context);
+        }
+        else
+        {
+            throw new RuntimeError("Right hand parameter of 'is' must be type or list of types", context);
+        }
+    }
+
+    private static Primitive<?> length(Context context, List<Token> args)
+    {
+        Primitive<?> other = fromTable(0, args, context);
+
+        return switch (other.getType())
+                {
+                    case LIST -> new NumberPrimitive(Primitive.<ListPrimitive>cast(other).getValue().size(), context);
+                    case STRING -> new NumberPrimitive(Primitive.<StringPrimitive>cast(other).getValue().length(), context);
+                    default -> throw new RuntimeError("Cannot use 'length' on " + other.getType(), context);
+                };
+    }
+
+    private static Primitive<?> randInt(Context context, List<Token> args)
+    {
+        NumberPrimitive range = fromTable(0, args, context).getValue(Type.NUMBER);
+        return new NumberPrimitive(new SplittableRandom().nextInt(range.getValue().intValue()), context);
+    }
+
+    public static Primitive<?> randFloat(Context context, List<Token> args)
+    {
+        NumberPrimitive range = fromTable(0, args, context).getValue(Type.NUMBER);
+        return new NumberPrimitive(new SplittableRandom().nextDouble(range.getValue()), context);
     }
 
     @Override

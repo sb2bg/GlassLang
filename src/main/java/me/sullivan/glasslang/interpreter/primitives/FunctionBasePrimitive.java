@@ -29,11 +29,16 @@ public class FunctionBasePrimitive extends Primitive<Node>
 
         if (argLen != passedLen)
         {
-            throw new RuntimeError(Math.abs(passedLen - argLen) + " too " + (passedLen > argLen ? "few " : "many ") + "arguments were passed in", context);
+            throw new RuntimeError(Math.abs(passedLen - argLen) + " too " + (passedLen > argLen ? "many " : "few ") + "arguments were passed in", context);
         }
     }
 
     protected Interpreter getExecution()
+    {
+        return getExecution(name);
+    }
+
+    protected Interpreter getExecution(String name)
     {
         String contextName = MessageFormat.format("func<{0}>", name);
         return new Interpreter(context == null ? new Context(contextName, Context.getGlobalContext().getTable()) : new Context(context, contextName));
