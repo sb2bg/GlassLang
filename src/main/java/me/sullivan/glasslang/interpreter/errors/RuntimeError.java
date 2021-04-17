@@ -12,6 +12,6 @@ public class RuntimeError extends Error
 
     public RuntimeError(String message, Context context)
     {
-        super(MessageFormat.format("Runtime error, \"{0}\". {1}", message, context.toString()));
+        super(MessageFormat.format("Runtime error, \"{0}\". {1}", message, context));
     }
 }

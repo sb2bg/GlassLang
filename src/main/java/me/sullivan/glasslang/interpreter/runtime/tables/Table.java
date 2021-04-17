@@ -9,7 +9,6 @@ import java.util.Set;
 
 public class Table<C extends Table<C, V>, V>
 {
-
     protected C parentTable;
     protected HashMap<String, V> table = new HashMap<>();
     private static final Set<String> PROTECTED = Context.getDefaults();

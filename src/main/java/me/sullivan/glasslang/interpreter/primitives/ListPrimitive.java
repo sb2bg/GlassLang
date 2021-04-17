@@ -43,6 +43,7 @@ public class ListPrimitive extends Primitive<List<Primitive<?>>>
         return this;
     }
 
+    // TODO there has to be a better way than this? aka improve it smh
     @Override
     public Primitive<?> call(List<Node> argNodes)
     {

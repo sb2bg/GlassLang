@@ -76,8 +76,8 @@ public record Interpreter(Context context)
     public Primitive<?> visitIfNode(IfNode node)
     {
         Pair<Node, Node> ifCase = node.getValue();
-        Node valueNode = ifCase.getValue1();
         Primitive<?> condition = visitNode(ifCase.getValue0());
+        Node valueNode = ifCase.getValue1();
 
         if (condition.isTrue())
         {

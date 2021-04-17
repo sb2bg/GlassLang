@@ -35,6 +35,7 @@ public class StringPrimitive extends Primitive<String>
         return new StringPrimitive(value.repeat(otherValue.getValue().intValue()), context);
     }
 
+    // TODO there has to be a better way than this? aka improve it smh
     @Override
     public Primitive<?> call(List<Node> argNodes)
     {

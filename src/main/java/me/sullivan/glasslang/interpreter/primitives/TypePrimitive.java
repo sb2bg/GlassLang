@@ -9,5 +9,8 @@ public class TypePrimitive extends Primitive<Type>
         super(value, Type.TYPE, context);
     }
 
-
+    public BooleanPrimitive is(Primitive<?> other)
+    {
+        return new BooleanPrimitive(other.getType() == value, context);
+    }
 }

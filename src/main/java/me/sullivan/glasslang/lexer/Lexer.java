@@ -116,13 +116,17 @@ public class Lexer
             {
                 tokens.add(consumeString());
             }
+            else if (isNewline())
+            {
+                tokens.add(new Token(TokenType.EOL));
+                advance();
+            }
             else
             {
                 tokens.add(consumeWord());
             }
         }
 
-        tokens.add(new Token(TokenType.EOL));
         return tokens;
     }
 
@@ -244,11 +248,9 @@ public class Lexer
         return new Token(TokenType.IDENTIFIER, tok);
     }
 
-    private static final String WHITESPACE = " \t";
-
     private boolean isWhiteSpace()
     {
-        return WHITESPACE.contains(Character.toString(current));
+        return " \t".contains(Character.toString(current));
     }
 
     private boolean isNumber()
@@ -268,7 +270,7 @@ public class Lexer
 
     private boolean isString()
     {
-        return current == '"';
+        return "\"'".contains(Character.toString(current));
     }
 
     private boolean isOperator()
@@ -283,11 +285,16 @@ public class Lexer
 
     private boolean isUnderscore()
     {
-        return "_".contains(Character.toString(current));
+        return current == '_';
     }
 
     private boolean isEscaped()
     {
-        return "\\".contains(Character.toString(current));
+        return current == '\\';
+    }
+
+    private boolean isNewline()
+    {
+        return "\n;".contains(Character.toString(current));
     }
 }

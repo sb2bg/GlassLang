@@ -8,12 +8,13 @@ import me.sullivan.glasslang.lexer.token.Token;
 import me.sullivan.glasslang.parser.Parser;
 import me.sullivan.glasslang.parser.nodes.Node;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
 public class Shell
 {
-    private static final Scanner SCANNER = new Scanner(System.in);
+    public static final Scanner SCANNER = new Scanner(System.in);
     private static final Context G_CONTEXT = Context.getGlobalContext();
 
     public static void main(String[] args)
@@ -39,7 +40,7 @@ public class Shell
         }
     }
 
-    // TEMP no need once parsing text files
+    // TODO remove, no need once parsing text files
     private static void acceptIn()
     {
         System.out.print("GLang >>> ");
