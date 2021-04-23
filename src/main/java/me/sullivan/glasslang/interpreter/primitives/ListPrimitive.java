@@ -6,6 +6,7 @@ import me.sullivan.glasslang.interpreter.runtime.Context;
 import me.sullivan.glasslang.parser.nodes.Node;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -14,7 +15,7 @@ public class ListPrimitive extends Primitive<List<Primitive<?>>>
 
     public ListPrimitive(List<Primitive<?>> value, Context context)
     {
-        super(value, Type.LIST, context);
+        super(value, Type.LIST, context, new HashMap<>());
     }
 
     @Override
@@ -45,6 +46,7 @@ public class ListPrimitive extends Primitive<List<Primitive<?>>>
     }
 
     // TODO there has to be a better way than this? aka improve it smh
+    // TODO PT 2 fix negative bounds
     @Override
     public Primitive<?> call(List<Node> argNodes)
     {

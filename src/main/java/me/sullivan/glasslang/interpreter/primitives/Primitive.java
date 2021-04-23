@@ -1,23 +1,42 @@
 package me.sullivan.glasslang.interpreter.primitives;
 
+import me.sullivan.glasslang.interpreter.Interpreter;
 import me.sullivan.glasslang.interpreter.errors.RuntimeError;
+import me.sullivan.glasslang.interpreter.primitives.functions.Value;
+import me.sullivan.glasslang.interpreter.primitives.functions.ValueType;
+import me.sullivan.glasslang.interpreter.primitives.parsing.ParseMethod;
 import me.sullivan.glasslang.interpreter.runtime.Context;
+import me.sullivan.glasslang.lexer.token.Token;
 import me.sullivan.glasslang.parser.nodes.Node;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public abstract class Primitive<T>
 {
     protected Context context;
     protected T value;
     protected Type type;
+    protected Map<Type, ParseMethod> parseMethods;
 
-    public Primitive(T value, Type type, Context context)
+    public Primitive(T value, Type type, Context context, Map<Type, ParseMethod> parseMethods)
     {
         this.value = value;
         this.type = type;
         this.context = context;
+        this.parseMethods = parseMethods;
+
+        // TODO fix - println(parse(44, str) + 4) (output is 44.04, should be 444)
+        for (Type parseType : Type.values())
+        {
+            if (parseMethods.containsKey(parseType))
+            {
+                continue;
+            }
+
+            parseMethods.put(parseType, () -> new StringPrimitive(this.toString(), context));
+        }
     }
 
     public T getValue()
@@ -111,6 +130,11 @@ public abstract class Primitive<T>
         throw new RuntimeError("Cannot call " + getClass().getSimpleName(), context);
     }
 
+    public Context getContext()
+    {
+        return context;
+    }
+
     @SuppressWarnings("unchecked")
     public <CT extends Primitive<?>> CT getValue(Type type)
     {
@@ -132,6 +156,22 @@ public abstract class Primitive<T>
         return type;
     }
 
+    public void validate(TypePrimitive type)
+    {
+        if (parseMethods.containsKey(type.getValue()))
+        {
+            return;
+        }
+
+        throw new RuntimeError("Cannot cast " + this + " of type " + getType() + " to type " + type, context);
+    }
+
+    public Primitive<?> parse(TypePrimitive type)
+    {
+        validate(type);
+        return parseMethods.get(type.getValue()).parse();
+    }
+
     @SuppressWarnings("unchecked")
     public static <CT extends Primitive<?>> CT cast(Primitive<?> value)
     {
@@ -143,6 +183,37 @@ public abstract class Primitive<T>
     {
         return this == o || o instanceof Primitive<?> primitive
                 && primitive.type == type && primitive.getValue().equals(value);
+    }
+
+
+    protected void validateArgs(List<Node> passed, List<Token> args)
+    {
+        int argLen = args.size();
+        int passedLen = passed.size();
+
+        if (argLen != passedLen)
+        {
+            throw new RuntimeError(Math.abs(passedLen - argLen) + " too " + (passedLen > argLen ? "many " : "few ") + "arguments were passed in", context);
+        }
+    }
+
+    protected Interpreter getExecution(String name)
+    {
+        return new Interpreter(context == null ? new Context(name, Context.getGlobalContext().getTable()) : new Context(context, name));
+    }
+
+    protected Interpreter registerArgs(List<Node> passed, List<Token> args, Interpreter execution)
+    {
+        validateArgs(passed, args);
+
+        for (int i = 0; i < passed.size(); i++)
+        {
+            Token argName = args.get(i);
+            Node argValue = passed.get(i);
+            execution.context().getTable().set(argName.getValue(), execution.visitNode(argValue), context);
+        }
+
+        return execution;
     }
 
     @Override

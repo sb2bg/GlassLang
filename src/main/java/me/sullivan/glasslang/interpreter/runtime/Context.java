@@ -1,6 +1,7 @@
 package me.sullivan.glasslang.interpreter.runtime;
 
 import me.sullivan.glasslang.interpreter.primitives.*;
+import me.sullivan.glasslang.interpreter.primitives.functions.BuiltInFunction;
 import me.sullivan.glasslang.interpreter.runtime.tables.VariableTable;
 import org.jetbrains.annotations.NotNull;
 

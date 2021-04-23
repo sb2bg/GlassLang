@@ -25,7 +25,6 @@ public class Lexer
         TOKENS.put("/", TokenType.DIVIDE);
         TOKENS.put("**", TokenType.POWER);
         TOKENS.put("%", TokenType.MOD);
-        TOKENS.put("&", TokenType.IMPORT);
         TOKENS.put("=", TokenType.EQUALS);
         TOKENS.put("(", TokenType.LPAREN);
         TOKENS.put(")", TokenType.RPAREN);
@@ -45,8 +44,9 @@ public class Lexer
         TOKENS.put("==", TokenType.EQUAL_OP);
         TOKENS.put("=>", TokenType.LAMBDA);
 
-        TOKENS.put("$", TokenType.MONEY_SIGN);
-        TOKENS.put("@", TokenType.AT_SIGN);
+        TOKENS.put("var", TokenType.VAR);
+        TOKENS.put("func", TokenType.FUNC);
+        TOKENS.put("import", TokenType.IMPORT);
         TOKENS.put("while", TokenType.WHILE);
         TOKENS.put("return", TokenType.RETURN);
         TOKENS.put("if", TokenType.IF);
@@ -282,7 +282,7 @@ public class Lexer
 
     private boolean isSingleConsume()
     {
-        return "./&,()$@[]".contains(Character.toString(current));
+        return "./,()[]".contains(Character.toString(current));
     }
 
     private boolean isUnderscore()

@@ -1,6 +1,7 @@
 package me.sullivan.glasslang.interpreter;
 
 import me.sullivan.glasslang.interpreter.primitives.*;
+import me.sullivan.glasslang.interpreter.primitives.functions.FunctionPrimitive;
 import me.sullivan.glasslang.interpreter.runtime.Context;
 import me.sullivan.glasslang.lexer.token.Token;
 import me.sullivan.glasslang.lexer.token.TokenType;

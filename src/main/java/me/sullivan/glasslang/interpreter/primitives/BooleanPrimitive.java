@@ -2,11 +2,13 @@ package me.sullivan.glasslang.interpreter.primitives;
 
 import me.sullivan.glasslang.interpreter.runtime.Context;
 
+import java.util.HashMap;
+
 public class BooleanPrimitive extends Primitive<Boolean>
 {
     public BooleanPrimitive(Boolean value, Context context)
     {
-        super(value, Type.BOOLEAN, context);
+        super(value, Type.BOOLEAN, context, new HashMap<>());
     }
 
     @Override

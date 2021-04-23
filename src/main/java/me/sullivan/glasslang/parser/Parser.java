@@ -60,7 +60,7 @@ public class Parser
 
     private Node expression()
     {
-        if (current.getType() == TokenType.MONEY_SIGN)
+        if (current.getType() == TokenType.VAR)
         {
             return new AssignmentNode(assignment(), expression());
         }
@@ -224,7 +224,7 @@ public class Parser
         {
             return whileExpression();
         }
-        else if (current.getType() == TokenType.AT_SIGN)
+        else if (current.getType() == TokenType.FUNC)
         {
             return funcDefinition();
         }
@@ -377,9 +377,9 @@ public class Parser
 
     private Node funcDefinition()
     {
-        if (current.getType() != TokenType.AT_SIGN)
+        if (current.getType() != TokenType.FUNC)
         {
-            throw new InvalidSyntaxError(new TokenType[]{TokenType.AT_SIGN});
+            throw new InvalidSyntaxError(new TokenType[]{TokenType.FUNC});
         }
 
         advance();

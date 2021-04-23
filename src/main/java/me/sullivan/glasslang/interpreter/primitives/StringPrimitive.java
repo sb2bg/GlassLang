@@ -6,14 +6,30 @@ import me.sullivan.glasslang.interpreter.runtime.Context;
 import me.sullivan.glasslang.parser.nodes.Node;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.List;
 
 public class StringPrimitive extends Primitive<String>
 {
-
     public StringPrimitive(String value, Context context)
     {
-        super(value, Type.STRING, context);
+        super(value, Type.STRING, context, new HashMap<>()
+        {{
+            put(Type.NUMBER, () ->
+            {
+                try
+                {
+                    return new NumberPrimitive(Double.parseDouble(value), context);
+                }
+                catch (NumberFormatException e)
+                {
+                    return new VoidPrimitive();
+                }
+            });
+
+            // TODO add logic - TypePrimitive(, context)
+            put(Type.TYPE, VoidPrimitive::new);
+        }});
     }
 
     @Override

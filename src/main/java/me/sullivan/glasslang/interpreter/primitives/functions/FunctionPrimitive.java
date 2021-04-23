@@ -1,5 +1,7 @@
-package me.sullivan.glasslang.interpreter.primitives;
+package me.sullivan.glasslang.interpreter.primitives.functions;
 
+import me.sullivan.glasslang.interpreter.primitives.Primitive;
+import me.sullivan.glasslang.interpreter.primitives.functions.FunctionBasePrimitive;
 import me.sullivan.glasslang.interpreter.runtime.Context;
 import me.sullivan.glasslang.lexer.token.Token;
 import me.sullivan.glasslang.parser.nodes.Node;
@@ -24,6 +26,6 @@ public class FunctionPrimitive extends FunctionBasePrimitive
     @Override
     public Primitive<?> call(List<Node> argNodes)
     {
-        return registerArgs(argNodes, getExecution()).visitNode(value);
+        return registerArgs(argNodes, args, getExecution(displayName)).visitNode(value);
     }
 }

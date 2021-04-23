@@ -1,6 +1,7 @@
-package me.sullivan.glasslang.interpreter.primitives;
+package me.sullivan.glasslang.interpreter.primitives.functions;
 
 import me.sullivan.glasslang.interpreter.errors.RuntimeError;
+import me.sullivan.glasslang.interpreter.primitives.*;
 import me.sullivan.glasslang.interpreter.runtime.Context;
 import me.sullivan.glasslang.lexer.token.Token;
 import me.sullivan.glasslang.lexer.token.TokenType;
@@ -30,12 +31,12 @@ public class BuiltInFunction extends FunctionBasePrimitive
     {
         builtIns.put("print", new Pair<>(BuiltInFunction::print, new String[]{"value"}));
         builtIns.put("println", new Pair<>(BuiltInFunction::println, new String[]{"value"}));
-        builtIns.put("strInput", new Pair<>(BuiltInFunction::strInput, new String[]{}));
-        builtIns.put("numInput", new Pair<>(BuiltInFunction::numInput, new String[]{}));
+        builtIns.put("input", new Pair<>(BuiltInFunction::input, new String[]{"value"}));
         builtIns.put("is", new Pair<>(BuiltInFunction::is, new String[]{"left", "right"}));
         builtIns.put("length", new Pair<>(BuiltInFunction::length, new String[]{"value"}));
         builtIns.put("randInt", new Pair<>(BuiltInFunction::randInt, new String[]{"value"}));
         builtIns.put("randFloat", new Pair<>(BuiltInFunction::randFloat, new String[]{"value"}));
+        builtIns.put("parse", new Pair<>(BuiltInFunction::parse, new String[]{"left", "right"}));
         // TODO add math functions, and others such as "in"
     }
 
@@ -56,21 +57,10 @@ public class BuiltInFunction extends FunctionBasePrimitive
         return new VoidPrimitive();
     }
 
-    private static Primitive<?> strInput(Context context, List<Token> args)
+    private static Primitive<?> input(Context context, List<Token> args)
     {
+        print(context, args);
         return new StringPrimitive(Shell.SCANNER.nextLine(), context);
-    }
-
-    private static Primitive<?> numInput(Context context, List<Token> args)
-    {
-        try
-        {
-            return new NumberPrimitive(Shell.SCANNER.nextDouble(), context);
-        }
-        catch (InputMismatchException e)
-        {
-            throw new RuntimeError("Result of 'numInput' must be a number.", context);
-        }
     }
 
     private static Primitive<?> is(Context context, List<Token> args)
@@ -124,11 +114,26 @@ public class BuiltInFunction extends FunctionBasePrimitive
         return new NumberPrimitive(new SplittableRandom().nextDouble(range.getValue()), context);
     }
 
+    // TODO override all parse methods in sub primitive classes
+    private static Primitive<?> parse(Context context, List<Token> args)
+    {
+        Primitive<?> left = fromTable(0, args, context);
+        TypePrimitive right = fromTable(1, args, context).getValue(Type.TYPE);
+
+        return left.parse(right);
+    }
+
     @Override
     public Primitive<?> call(List<Node> argNodes)
     {
         Pair<BuiltIn, String[]> method = builtIns.get(name);
-        Context context = registerArgs(argNodes, getExecution()).context();
+
+        if (method == null)
+        {
+            throw new RuntimeError("GlassLang has encountered an error. Builtin " + name + " is undefined.", context);
+        }
+
+        Context context = registerArgs(argNodes, args, getExecution(displayName)).context();
 
         return method.getValue0().call(context, args);
     }

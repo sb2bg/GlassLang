@@ -3,12 +3,13 @@ package me.sullivan.glasslang.interpreter.primitives;
 import me.sullivan.glasslang.interpreter.errors.RuntimeError;
 import me.sullivan.glasslang.interpreter.runtime.Context;
 
+import java.util.HashMap;
+
 public class NumberPrimitive extends Primitive<Double>
 {
-
     public NumberPrimitive(double value, Context context)
     {
-        super(value, Type.NUMBER, context);
+        super(value, Type.NUMBER, context, new HashMap<>());
     }
 
     @Override
@@ -95,10 +96,12 @@ public class NumberPrimitive extends Primitive<Double>
         return equal(other).not();
     }
 
+    // TODO fix num to str method
     public static String doubleToString(Double value)
     {
         String stringVal = value.toString();
-        return value % 1 == 0 ? stringVal.substring(0, stringVal.length() - 2) : stringVal;
+        return value.toString();
+        //return value % 1 == 0 ? stringVal.substring(0, stringVal.length() - 2) : stringVal;
     }
 
     @Override
