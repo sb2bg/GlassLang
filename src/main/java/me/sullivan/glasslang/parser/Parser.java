@@ -30,8 +30,9 @@ public class Parser
         {
             throw new InvalidSyntaxError(new TokenType[]{
                     TokenType.PLUS, TokenType.MINUS, TokenType.TIMES,
-                    TokenType.DIVIDE, TokenType.POWER, TokenType.EQUAL_OP,
-                    TokenType.NOT_EQUAL, TokenType.LESS, TokenType.GREATER,
+                    TokenType.DIVIDE, TokenType.PLUS_EQUALS, TokenType.MINUS_EQUALS,
+                    TokenType.DIVIDED_EQUALS, TokenType.TIMES_EQUALS, TokenType.POWER,
+                    TokenType.EQUAL_OP, TokenType.NOT_EQUAL, TokenType.LESS, TokenType.GREATER,
                     TokenType.LESS_EQUAL, TokenType.GREATER_EQUAL, TokenType.AND,
                     TokenType.OR
             });
@@ -62,9 +63,12 @@ public class Parser
     {
         if (current.getType() == TokenType.IDENTIFIER)
         {
-            if (lookAhead().getType() == TokenType.EQUALS)
+            Token op = lookAhead();
+
+            if (isMatch(op, new TokenType[]{TokenType.EQUALS, TokenType.PLUS_EQUALS,
+                    TokenType.MINUS_EQUALS, TokenType.TIMES_EQUALS, TokenType.DIVIDED_EQUALS}))
             {
-                return new AssignmentNode(assignment(), expression());
+                return new AssignmentNode(assignment(), op, expression());
             }
         }
 
@@ -76,9 +80,11 @@ public class Parser
         Token identifier = current;
         advance();
 
-        if (current.getType() != TokenType.EQUALS)
+        if (!isMatch(new TokenType[]{TokenType.EQUALS, TokenType.PLUS_EQUALS,
+                TokenType.MINUS_EQUALS, TokenType.TIMES_EQUALS, TokenType.DIVIDED_EQUALS}))
         {
-            throw new InvalidSyntaxError(new TokenType[]{TokenType.EQUALS});
+            throw new InvalidSyntaxError(new TokenType[]{TokenType.EQUALS, TokenType.PLUS_EQUALS,
+                    TokenType.MINUS_EQUALS, TokenType.TIMES_EQUALS, TokenType.DIVIDED_EQUALS});
         }
 
         advance();
@@ -449,7 +455,12 @@ public class Parser
 
     private boolean isMatch(TokenType[] types)
     {
-        return List.of(types).contains(current.getType());
+        return isMatch(current, types);
+    }
+
+    private boolean isMatch(Token token, TokenType[] types)
+    {
+        return List.of(types).contains(token.getType());
     }
 
     private Token lookAhead()

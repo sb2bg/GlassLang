@@ -1,5 +1,6 @@
 package me.sullivan.glasslang.interpreter;
 
+import me.sullivan.glasslang.interpreter.errors.RuntimeError;
 import me.sullivan.glasslang.interpreter.primitives.*;
 import me.sullivan.glasslang.interpreter.primitives.functions.FunctionPrimitive;
 import me.sullivan.glasslang.interpreter.runtime.Context;
@@ -71,7 +72,15 @@ public record Interpreter(Context context)
 
     public Primitive<?> visitAssignmentNode(AssignmentNode node)
     {
-        return context.getTable().set(node.getToken().getValue(), visitNode(node.getValue()), context);
+        return switch (node.getOperator().getType())
+        {
+            case EQUALS -> context.getTable().set(node.getToken().getValue(), visitNode(node.getValue()), context);
+            case PLUS_EQUALS -> context.getTable().set(node.getToken().getValue(), context.getTable().get(node.getToken().getValue(), context).add(visitNode(node.getValue())), context);
+            case MINUS_EQUALS -> context.getTable().set(node.getToken().getValue(), context.getTable().get(node.getToken().getValue(), context).min(visitNode(node.getValue())), context);
+            case DIVIDED_EQUALS -> context.getTable().set(node.getToken().getValue(), context.getTable().get(node.getToken().getValue(), context).div(visitNode(node.getValue())), context);
+            case TIMES_EQUALS -> context.getTable().set(node.getToken().getValue(), context.getTable().get(node.getToken().getValue(), context).mul(visitNode(node.getValue())), context);
+            default -> throw new RuntimeError("Operator " + node.getOperator() + " undefined for assignment", context);
+        };
     }
 
     public Primitive<?> visitIfNode(IfNode node)

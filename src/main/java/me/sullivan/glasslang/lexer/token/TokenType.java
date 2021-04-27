@@ -12,7 +12,7 @@ public enum TokenType
     POWER("POW", "'**'"), IF("IF", "'if'"), RETURN("RETURN", "'return'"), WHILE("WHILE", "'while'"),
     EQUAL_OP("EQUAL OPERATOR", "'=='"), LBRACKET("LEFT SQUARE BRACKET", "'['"),
     RBRACKET("RIGHT SQUARE BRACKET", "']'"),
-    GREATER_EQUAL("GREATER THAN EQUAL TO", "'>='"), FUNC("FUNC", "'func'"), COMMA("COMMA", ",'"),
+    GREATER_EQUAL("GREATER THAN EQUAL TO", "'>='"), FUNC("FUNC", "'func'"), COMMA("COMMA", "','"),
     STEP("STEP", "'step'"), AND("AND", "'and'"), OR("OR", "'or'"), NOT("NOT", "'not'"), ELSE("ELSE", "'else'"),
     END("END", "'end'"),
     TO("TO", "'to'"), LAMBDA("LAMBDA", "'=>'"), MOD("MODULUS", "'%'"), IMPORT("IMPORT", "'import'"), PERIOD("PERIOD", "'.'"),

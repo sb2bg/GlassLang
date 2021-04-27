@@ -6,12 +6,13 @@ import me.sullivan.glasslang.lexer.token.Token;
 
 public class AssignmentNode extends Node
 {
-
+    private Token operator;
     private Node node;
 
-    public AssignmentNode(Token token, Node node)
+    public AssignmentNode(Token identifier, Token operator, Node node)
     {
-        super(token);
+        super(identifier);
+        this.operator = operator;
         this.node = node;
     }
 
@@ -25,6 +26,11 @@ public class AssignmentNode extends Node
     public String toString()
     {
         return "Assignment(" + token.getValue() + ", " + getValue() + ")";
+    }
+
+    public Token getOperator()
+    {
+        return operator;
     }
 
     @Override

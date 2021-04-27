@@ -1,5 +1,6 @@
 package me.sullivan.glasslang.interpreter.runtime;
 
+import me.sullivan.glasslang.interpreter.errors.RuntimeError;
 import me.sullivan.glasslang.interpreter.primitives.*;
 import me.sullivan.glasslang.interpreter.primitives.functions.BuiltInFunction;
 import me.sullivan.glasslang.interpreter.runtime.tables.VariableTable;
@@ -75,15 +76,23 @@ public class Context
         return new HashSet<>(DEFAULTS.keySet());
     }
 
+    protected int depth;
     protected Context parent;
     protected String context;
     protected VariableTable varTable;
 
-    public Context(@NotNull Context parent, String context)
+    // TODO Possibly fixed, maybe a more elegant solution next?
+    public Context(Context parent, String context)
     {
         this.parent = parent;
         this.context = context;
         this.varTable = new VariableTable(parent.getTable());
+        this.depth = parent.depth + 1;
+
+        if (depth > 500)
+        {
+            throw new RuntimeError("StackOverFlowException, make sure you don't have an infinite cycle of functions. Depth=" + depth, this);
+        }
     }
 
     public Context(String context, VariableTable varTable)
