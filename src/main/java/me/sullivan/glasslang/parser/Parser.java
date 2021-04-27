@@ -60,9 +60,12 @@ public class Parser
 
     private Node expression()
     {
-        if (current.getType() == TokenType.VAR)
+        if (current.getType() == TokenType.IDENTIFIER)
         {
-            return new AssignmentNode(assignment(), expression());
+            if (lookAhead().getType() == TokenType.EQUALS)
+            {
+                return new AssignmentNode(assignment(), expression());
+            }
         }
 
         return mathOp(this::compExpression, null, new TokenType[]{TokenType.AND, TokenType.OR});
@@ -70,13 +73,6 @@ public class Parser
 
     private Token assignment()
     {
-        advance();
-
-        if (current.getType() != TokenType.IDENTIFIER)
-        {
-            throw new InvalidSyntaxError(new TokenType[]{TokenType.IDENTIFIER});
-        }
-
         Token identifier = current;
         advance();
 
@@ -454,6 +450,11 @@ public class Parser
     private boolean isMatch(TokenType[] types)
     {
         return List.of(types).contains(current.getType());
+    }
+
+    private Token lookAhead()
+    {
+        return index + 1 < tokens.size() ? tokens.get(index + 1) : current;
     }
 
     private interface NodeMethod

@@ -44,7 +44,6 @@ public class Lexer
         TOKENS.put("==", TokenType.EQUAL_OP);
         TOKENS.put("=>", TokenType.LAMBDA);
 
-        TOKENS.put("var", TokenType.VAR);
         TOKENS.put("func", TokenType.FUNC);
         TOKENS.put("import", TokenType.IMPORT);
         TOKENS.put("while", TokenType.WHILE);
