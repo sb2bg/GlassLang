@@ -2,16 +2,12 @@ package me.sullivan.glasslang.interpreter.primitives;
 
 import me.sullivan.glasslang.interpreter.Interpreter;
 import me.sullivan.glasslang.interpreter.errors.RuntimeError;
-import me.sullivan.glasslang.interpreter.primitives.functions.Value;
-import me.sullivan.glasslang.interpreter.primitives.functions.ValueType;
 import me.sullivan.glasslang.interpreter.primitives.parsing.ParseMethod;
 import me.sullivan.glasslang.interpreter.runtime.Context;
 import me.sullivan.glasslang.lexer.token.Token;
 import me.sullivan.glasslang.parser.nodes.Node;
 
 import java.util.*;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public abstract class Primitive<T>
 {
@@ -125,7 +121,7 @@ public abstract class Primitive<T>
         throw new RuntimeError("Cannot check if " + getClass().getSimpleName() + " is true", context);
     }
 
-    public Primitive<?> call(List<Node> argNodes)
+    public Primitive<?> call(List<Node> argNodes, Context runtime)
     {
         throw new RuntimeError("Cannot call " + getClass().getSimpleName(), context);
     }
@@ -197,7 +193,7 @@ public abstract class Primitive<T>
         }
     }
 
-    protected Interpreter getExecution(String name)
+    protected Interpreter getExecution(String name, Context context)
     {
         return new Interpreter(context == null ? new Context(name, Context.getGlobalContext().getTable()) : new Context(context, name));
     }

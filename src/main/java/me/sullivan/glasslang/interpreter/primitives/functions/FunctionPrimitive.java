@@ -15,17 +15,9 @@ public class FunctionPrimitive extends FunctionBasePrimitive
         super(name, value, args, context);
     }
 
-    // FIXME Doesn't work :(
-    // {
-    //	 @def(otherFunc, a) => otherFunc(a)
-    //
-    //	 @test(a) => a
-    //
-    //	 def(test, 1)
-    // }
     @Override
-    public Primitive<?> call(List<Node> argNodes)
+    public Primitive<?> call(List<Node> argNodes, Context runtime)
     {
-        return registerArgs(argNodes, args, getExecution(displayName)).visitNode(value);
+        return registerArgs(argNodes, args, getExecution(displayName, runtime)).visitNode(value);
     }
 }

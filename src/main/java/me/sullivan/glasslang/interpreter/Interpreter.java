@@ -157,7 +157,7 @@ public record Interpreter(Context context)
 
     public Primitive<?> visitCallNode(CallNode node)
     {
-        return visitNode(node.nodeToCall()).call(node.getArgNodes());
+        return visitNode(node.nodeToCall()).call(node.getArgNodes(), context);
     }
 
     public Primitive<?> visitStringNode(StringNode stringNode)

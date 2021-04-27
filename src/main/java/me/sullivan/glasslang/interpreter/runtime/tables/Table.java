@@ -22,31 +22,18 @@ public class Table<C extends Table<C, V>, V>
         this.parentTable = parentTable;
     }
 
-    public C getParentTable()
-    {
-        return parentTable;
-    }
-
     public V get(String variable, Context context)
     {
-        Table<C, V> search = this;
-
-        while (!search.contains(variable))
+        if (table.containsKey(variable))
         {
-            if (search.getParentTable() == null)
-            {
-                throw new RuntimeError(MessageFormat.format("{0} is undefined", variable), context);
-            }
-
-            if (search.getParentTable().contains(variable))
-            {
-                return search.getParentTable().get(variable, context);
-            }
-
-            search = search.getParentTable();
+            return table.get(variable);
+        }
+        else if (parentTable != null)
+        {
+            return parentTable.get(variable, context);
         }
 
-        return table.get(variable);
+        throw new RuntimeError(MessageFormat.format("{0} is undefined", variable), context);
     }
 
     public V set(String variable, V value, Context context)

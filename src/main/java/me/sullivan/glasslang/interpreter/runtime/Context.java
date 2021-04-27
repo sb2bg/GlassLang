@@ -13,7 +13,7 @@ public class Context
 {
     public enum Keyword
     {
-        TRUE("true"), FALSE("false"), STRING("str"), NUMBER("num"), LIST("list"), FUNCTION("func"), TYPE("type"),
+        TRUE("true"), FALSE("false"), STRING("string"), NUMBER("number"), LIST("list"), FUNCTION("function"), TYPE("type"),
         BOOLEAN("bool"), VOID("void");
 
         private final String keyword;

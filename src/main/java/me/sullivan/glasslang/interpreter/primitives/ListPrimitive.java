@@ -1,14 +1,15 @@
 package me.sullivan.glasslang.interpreter.primitives;
 
-import me.sullivan.glasslang.interpreter.Interpreter;
 import me.sullivan.glasslang.interpreter.errors.RuntimeError;
 import me.sullivan.glasslang.interpreter.runtime.Context;
+import me.sullivan.glasslang.lexer.token.Token;
+import me.sullivan.glasslang.lexer.token.TokenType;
 import me.sullivan.glasslang.parser.nodes.Node;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 public class ListPrimitive extends Primitive<List<Primitive<?>>>
 {
@@ -45,19 +46,18 @@ public class ListPrimitive extends Primitive<List<Primitive<?>>>
         return this;
     }
 
-    // TODO there has to be a better way than this? aka improve it smh
-    // TODO PT 2 fix negative bounds
+    // TODO fix negative bounds
     @Override
-    public Primitive<?> call(List<Node> argNodes)
+    public Primitive<?> call(List<Node> argNodes, Context runtime)
     {
-        if (argNodes.size() != 1)
-        {
-            throw new RuntimeError("Expected one argument", context);
-        }
+        ArrayList<Token> args = new ArrayList<>()
+        {{
+            add(new Token(TokenType.IDENTIFIER, "index"));
+        }};
 
-        Interpreter interpreter = new Interpreter(new Context(context, MessageFormat.format("func<{0}>", "get-list.index")));
-        NumberPrimitive otherValue = interpreter.visitNode(argNodes.get(0)).getValue(Type.NUMBER);
-        int index = otherValue.getValue().intValue();
+        Context context = registerArgs(argNodes, args, getExecution("internal.list-index", runtime)).context();
+        NumberPrimitive indexPrim = context.getTable().get(args.get(0).getValue(), context).getValue(Type.NUMBER);
+        int index = indexPrim.getValue().intValue();
 
         if (index >= value.size() || index < 0)
         {

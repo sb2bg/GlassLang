@@ -3,9 +3,12 @@ package me.sullivan.glasslang.interpreter.primitives;
 import me.sullivan.glasslang.interpreter.Interpreter;
 import me.sullivan.glasslang.interpreter.errors.RuntimeError;
 import me.sullivan.glasslang.interpreter.runtime.Context;
+import me.sullivan.glasslang.lexer.token.Token;
+import me.sullivan.glasslang.lexer.token.TokenType;
 import me.sullivan.glasslang.parser.nodes.Node;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -51,9 +54,9 @@ public class StringPrimitive extends Primitive<String>
         return new StringPrimitive(value.repeat(otherValue.getValue().intValue()), context);
     }
 
-    // TODO there has to be a better way than this? aka improve it smh
+    // TODO there has to be a better way than this? aka improve it smh (also use methods from base)
     @Override
-    public Primitive<?> call(List<Node> argNodes)
+    public Primitive<?> call(List<Node> argNodes, Context runtime)
     {
         if (argNodes.size() > 2 || 1 > argNodes.size())
         {
@@ -92,5 +95,10 @@ public class StringPrimitive extends Primitive<String>
         }
 
         return new StringPrimitive(this.value.substring(valueStart, valueEnd), context);
+    }
+
+    public Boolean contains(StringPrimitive other)
+    {
+        return value.contains(other.getValue());
     }
 }

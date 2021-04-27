@@ -37,7 +37,8 @@ public class BuiltInFunction extends FunctionBasePrimitive
         builtIns.put("randInt", new Pair<>(BuiltInFunction::randInt, new String[]{"value"}));
         builtIns.put("randFloat", new Pair<>(BuiltInFunction::randFloat, new String[]{"value"}));
         builtIns.put("parse", new Pair<>(BuiltInFunction::parse, new String[]{"left", "right"}));
-        // TODO add math functions, and others such as "in"
+        builtIns.put("in", new Pair<>(BuiltInFunction::in, new String[]{"left", "right"}));
+        builtIns.put("typeOf", new Pair<>(BuiltInFunction::typeOf, new String[]{"value"}));
     }
 
     public static Set<String> getBuiltInNames()
@@ -73,21 +74,23 @@ public class BuiltInFunction extends FunctionBasePrimitive
             TypePrimitive other = right.getValue(Type.TYPE);
             return other.is(left);
         }
-        else if (right.getType() == Type.LIST)
-        {
-            List<Primitive<?>> other = right.getValue(Type.LIST);
-
-            if (other.contains(left))
-            {
-                return new BooleanPrimitive(true, context);
-            }
-
-            return new BooleanPrimitive(false, context);
-        }
         else
         {
-            throw new RuntimeError("Right hand parameter of 'is' must be type or list of types", context);
+            return left.equal(right);
         }
+    }
+
+    private static Primitive<?> in(Context context, List<Token> args)
+    {
+        Primitive<?> left = fromTable(0, args, context);
+        Primitive<?> right = fromTable(1, args, context);
+
+        return switch (right.getType())
+                {
+                    case LIST -> new BooleanPrimitive(Primitive.<ListPrimitive>cast(right).getValue().contains(left), context);
+                    case STRING -> new BooleanPrimitive(Primitive.<StringPrimitive>cast(right).contains(left.getValue(Type.STRING)), context);
+                    default -> new BooleanPrimitive(false, context);
+                };
     }
 
     private static Primitive<?> length(Context context, List<Token> args)
@@ -123,8 +126,13 @@ public class BuiltInFunction extends FunctionBasePrimitive
         return left.parse(right);
     }
 
+    private static Primitive<?> typeOf(Context context, List<Token> args)
+    {
+        return new TypePrimitive(fromTable(0, args, context).getType(), context);
+    }
+
     @Override
-    public Primitive<?> call(List<Node> argNodes)
+    public Primitive<?> call(List<Node> argNodes, Context runtime)
     {
         Pair<BuiltIn, String[]> method = builtIns.get(name);
 
@@ -133,7 +141,7 @@ public class BuiltInFunction extends FunctionBasePrimitive
             throw new RuntimeError("GlassLang has encountered an error. Builtin " + name + " is undefined.", context);
         }
 
-        Context context = registerArgs(argNodes, args, getExecution(displayName)).context();
+        Context context = registerArgs(argNodes, args, getExecution(displayName, runtime)).context();
 
         return method.getValue0().call(context, args);
     }
