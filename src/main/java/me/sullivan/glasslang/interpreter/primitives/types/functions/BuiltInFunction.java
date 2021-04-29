@@ -1,7 +1,7 @@
-package me.sullivan.glasslang.interpreter.primitives.functions;
+package me.sullivan.glasslang.interpreter.primitives.types.functions;
 
 import me.sullivan.glasslang.interpreter.errors.RuntimeError;
-import me.sullivan.glasslang.interpreter.primitives.*;
+import me.sullivan.glasslang.interpreter.primitives.types.*;
 import me.sullivan.glasslang.interpreter.runtime.Context;
 import me.sullivan.glasslang.lexer.token.Token;
 import me.sullivan.glasslang.lexer.token.TokenType;
@@ -101,6 +101,7 @@ public class BuiltInFunction extends FunctionBasePrimitive
                 {
                     case LIST -> new NumberPrimitive(Primitive.<ListPrimitive>cast(other).getValue().size(), context);
                     case STRING -> new NumberPrimitive(Primitive.<StringPrimitive>cast(other).getValue().length(), context);
+                    case DICTIONARY -> new NumberPrimitive(Primitive.<DictionaryPrimitive>cast(other).getValue().size(), context);
                     default -> throw new RuntimeError("Cannot use 'length' on " + other.getType(), context);
                 };
     }

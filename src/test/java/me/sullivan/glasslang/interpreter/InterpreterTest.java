@@ -1,9 +1,9 @@
 package me.sullivan.glasslang.interpreter;
 
-import me.sullivan.glasslang.interpreter.primitives.NumberPrimitive;
-import me.sullivan.glasslang.interpreter.primitives.Primitive;
-import me.sullivan.glasslang.interpreter.primitives.StringPrimitive;
-import me.sullivan.glasslang.interpreter.primitives.Type;
+import me.sullivan.glasslang.interpreter.primitives.types.NumberPrimitive;
+import me.sullivan.glasslang.interpreter.primitives.types.Primitive;
+import me.sullivan.glasslang.interpreter.primitives.types.StringPrimitive;
+import me.sullivan.glasslang.interpreter.primitives.types.Type;
 import me.sullivan.glasslang.interpreter.runtime.Context;
 import me.sullivan.glasslang.lexer.token.Token;
 import me.sullivan.glasslang.lexer.token.TokenType;

@@ -1,14 +1,13 @@
 package me.sullivan.glasslang.shell;
 
 import me.sullivan.glasslang.interpreter.Interpreter;
-import me.sullivan.glasslang.interpreter.primitives.Primitive;
+import me.sullivan.glasslang.interpreter.primitives.types.Primitive;
 import me.sullivan.glasslang.interpreter.runtime.Context;
 import me.sullivan.glasslang.lexer.Lexer;
 import me.sullivan.glasslang.lexer.token.Token;
 import me.sullivan.glasslang.parser.Parser;
 import me.sullivan.glasslang.parser.nodes.Node;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 

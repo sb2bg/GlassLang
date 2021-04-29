@@ -1,6 +1,6 @@
 package me.sullivan.glasslang.interpreter.runtime.tables;
 
-import me.sullivan.glasslang.interpreter.primitives.Primitive;
+import me.sullivan.glasslang.interpreter.primitives.types.Primitive;
 
 public class VariableTable extends Table<VariableTable, Primitive<?>>
 {

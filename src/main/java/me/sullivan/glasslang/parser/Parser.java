@@ -8,6 +8,7 @@ import org.javatuples.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 
 public class Parser
 {
@@ -214,6 +215,10 @@ public class Parser
         {
             return listExpression();
         }
+        else if (current.getType() == TokenType.LBRACE)
+        {
+            return dictExpression();
+        }
         else if (current.getType() == TokenType.IF)
         {
             return ifExpression();
@@ -234,6 +239,56 @@ public class Parser
         throw new InvalidSyntaxError(new TokenType[]{
                 TokenType.NUMBER, TokenType.IDENTIFIER, TokenType.PLUS,
                 TokenType.MINUS, TokenType.LPAREN});
+    }
+
+    private Node dictExpression()
+    {
+        if (current.getType() != TokenType.LBRACE)
+        {
+            throw new InvalidSyntaxError(new TokenType[]{TokenType.LBRACE});
+        }
+
+        advance();
+        TreeMap<Node, Node> map = new TreeMap<>();
+
+        if (current.getType() == TokenType.RBRACE)
+        {
+            return new DictNode(map);
+        }
+
+        Node key = expression();
+
+        if (current.getType() != TokenType.COLON)
+        {
+            throw new InvalidSyntaxError(new TokenType[]{TokenType.COLON});
+        }
+
+        advance();
+        Node value = expression();
+        map.put(key, value);
+
+        while (current.getType() == TokenType.COMMA)
+        {
+            advance();
+
+            key = expression();
+
+            if (current.getType() != TokenType.COLON)
+            {
+                throw new InvalidSyntaxError(new TokenType[]{TokenType.COLON});
+            }
+
+            advance();
+            map.put(key, expression());
+        }
+
+        if (current.getType() != TokenType.RBRACE)
+        {
+            throw new InvalidSyntaxError(new TokenType[]{TokenType.RBRACE});
+        }
+        advance();
+
+        return new DictNode(map);
     }
 
     // TODO implement import
@@ -258,6 +313,11 @@ public class Parser
         Token string = current;
         advance();
 
+        if (current.getType() != TokenType.LAMBDA)
+        {
+            throw new InvalidSyntaxError(new TokenType[]{TokenType.LAMBDA});
+        }
+
         return new ImportNode(string);
     }
 
@@ -272,20 +332,21 @@ public class Parser
 
         List<Node> expressions = new ArrayList<>();
 
+        if (current.getType() == TokenType.RBRACKET)
+        {
+            return new ListNode(expressions);
+        }
+        expressions.add(expression());
+
+        while (current.getType() == TokenType.COMMA)
+        {
+            advance();
+            expressions.add(expression());
+        }
+
         if (current.getType() != TokenType.RBRACKET)
         {
-            expressions.add(expression());
-
-            while (current.getType() == TokenType.COMMA)
-            {
-                advance();
-                expressions.add(expression());
-            }
-
-            if (current.getType() != TokenType.RBRACKET)
-            {
-                throw new InvalidSyntaxError(new TokenType[]{TokenType.RBRACKET});
-            }
+            throw new InvalidSyntaxError(new TokenType[]{TokenType.RBRACKET});
         }
 
         advance();

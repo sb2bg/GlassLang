@@ -1,9 +1,6 @@
-package me.sullivan.glasslang.interpreter.primitives;
-
-import me.sullivan.glasslang.parser.nodes.Node;
+package me.sullivan.glasslang.interpreter.primitives.types;
 
 import java.util.HashMap;
-import java.util.List;
 
 public class VoidPrimitive extends Primitive<Void>
 {

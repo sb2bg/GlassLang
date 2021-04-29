@@ -1,4 +1,4 @@
-package me.sullivan.glasslang.interpreter.primitives;
+package me.sullivan.glasslang.interpreter.primitives.types;
 
 import me.sullivan.glasslang.interpreter.errors.RuntimeError;
 import me.sullivan.glasslang.interpreter.runtime.Context;

@@ -30,6 +30,9 @@ public class Lexer
         TOKENS.put(")", TokenType.RPAREN);
         TOKENS.put("[", TokenType.LBRACKET);
         TOKENS.put("]", TokenType.RBRACKET);
+        TOKENS.put("{", TokenType.LBRACE);
+        TOKENS.put("}", TokenType.RBRACE);
+        TOKENS.put(":", TokenType.COLON);
         TOKENS.put("<", TokenType.LESS);
         TOKENS.put(">", TokenType.GREATER);
         TOKENS.put("<=", TokenType.LESS_EQUAL);
@@ -281,7 +284,7 @@ public class Lexer
 
     private boolean isSingleConsume()
     {
-        return "./,()[]".contains(Character.toString(current));
+        return "./,()[]{}:".contains(Character.toString(current));
     }
 
     private boolean isUnderscore()

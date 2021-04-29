@@ -1,12 +1,14 @@
-package me.sullivan.glasslang.interpreter.primitives;
+package me.sullivan.glasslang.interpreter.primitives.types;
 
 import me.sullivan.glasslang.interpreter.Interpreter;
 import me.sullivan.glasslang.interpreter.errors.RuntimeError;
 import me.sullivan.glasslang.interpreter.primitives.parsing.ParseMethod;
 import me.sullivan.glasslang.interpreter.runtime.Context;
 import me.sullivan.glasslang.lexer.token.Token;
+import me.sullivan.glasslang.lexer.token.TokenType;
 import me.sullivan.glasslang.parser.nodes.Node;
 
+import java.text.MessageFormat;
 import java.util.*;
 
 public abstract class Primitive<T>
@@ -210,6 +212,29 @@ public abstract class Primitive<T>
         }
 
         return execution;
+    }
+
+    protected int index(List<Node> argNodes, Context runtime, int size)
+    {
+        ArrayList<Token> args = new ArrayList<>()
+        {{
+            add(new Token(TokenType.IDENTIFIER, "index"));
+        }};
+
+        Context context = registerArgs(argNodes, args, getExecution("internal.index", runtime)).context();
+        NumberPrimitive indexPrim = context.getTable().get(args.get(0).getValue(), context).getValue(Type.NUMBER);
+        int index = indexPrim.getValue().intValue();
+
+        if (index >= size)
+        {
+            throw new RuntimeError(MessageFormat.format("Index {0} out of bounds for range {1}", index, size), context);
+        }
+        else if (index < 0)
+        {
+            index += size;
+        }
+
+        return index;
     }
 
     @Override

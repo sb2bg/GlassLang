@@ -2,31 +2,35 @@ package me.sullivan.glasslang.parser.nodes;
 
 import me.sullivan.glasslang.interpreter.Interpreter;
 import me.sullivan.glasslang.interpreter.primitives.types.Primitive;
-import me.sullivan.glasslang.lexer.token.Token;
 
-public class StringNode extends Node
+import java.util.Map;
+import java.util.TreeMap;
+
+public class DictNode extends Node
 {
+    private TreeMap<Node, Node> map;
 
-    public StringNode(Token token)
+    public DictNode(TreeMap<Node, Node> map)
     {
-        super(token);
+        super(null);
+        this.map = map;
     }
 
     @Override
-    public String getValue()
+    public TreeMap<Node, Node> getValue()
     {
-        return token.getValue();
+        return map;
     }
 
     @Override
     public String toString()
     {
-        return "String(" + token.getValue() + ")";
+        return "Map" + map;
     }
 
     @Override
     public Primitive<?> visitor(Interpreter interpreter)
     {
-        return interpreter.visitStringNode(this);
+        return interpreter.visitMapNode(this);
     }
 }

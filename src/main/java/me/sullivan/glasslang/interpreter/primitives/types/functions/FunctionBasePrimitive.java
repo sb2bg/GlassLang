@@ -1,7 +1,7 @@
-package me.sullivan.glasslang.interpreter.primitives.functions;
+package me.sullivan.glasslang.interpreter.primitives.types.functions;
 
-import me.sullivan.glasslang.interpreter.primitives.Primitive;
-import me.sullivan.glasslang.interpreter.primitives.Type;
+import me.sullivan.glasslang.interpreter.primitives.types.Primitive;
+import me.sullivan.glasslang.interpreter.primitives.types.Type;
 import me.sullivan.glasslang.interpreter.runtime.Context;
 import me.sullivan.glasslang.lexer.token.Token;
 import me.sullivan.glasslang.parser.nodes.Node;
@@ -20,7 +20,8 @@ public class FunctionBasePrimitive extends Primitive<Node>
     public FunctionBasePrimitive(String name, Node value, List<Token> args, Context context)
     {
         super(value, Type.FUNCTION, context, new HashMap<>());
-        this.name = name == null ? "anon-" + UUID.randomUUID() : name;        this.displayName = "func<" + name+ ">";
+        this.name = name == null ? "anon-" + UUID.randomUUID() : name;
+        this.displayName = "func<" + this.name + ">";
         this.args = args;
     }
 

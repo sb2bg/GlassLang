@@ -1,11 +1,8 @@
-package me.sullivan.glasslang.interpreter.primitives;
+package me.sullivan.glasslang.interpreter.primitives.types;
 
-import me.sullivan.glasslang.interpreter.errors.RuntimeError;
 import me.sullivan.glasslang.interpreter.runtime.Context;
-import me.sullivan.glasslang.parser.nodes.Node;
 
 import java.util.HashMap;
-import java.util.List;
 
 public class TypePrimitive extends Primitive<Type>
 {

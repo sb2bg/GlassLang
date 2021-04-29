@@ -1,10 +1,9 @@
 package me.sullivan.glasslang.interpreter.runtime;
 
 import me.sullivan.glasslang.interpreter.errors.RuntimeError;
-import me.sullivan.glasslang.interpreter.primitives.*;
-import me.sullivan.glasslang.interpreter.primitives.functions.BuiltInFunction;
+import me.sullivan.glasslang.interpreter.primitives.types.functions.BuiltInFunction;
+import me.sullivan.glasslang.interpreter.primitives.types.*;
 import me.sullivan.glasslang.interpreter.runtime.tables.VariableTable;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -39,16 +38,17 @@ public class Context
             DEFAULTS.put(name, new BuiltInFunction(name));
         }
 
-        DEFAULTS.put(Keyword.STRING.getKeyword(), new TypePrimitive(Type.STRING, null));
-        DEFAULTS.put(Keyword.NUMBER.getKeyword(), new TypePrimitive(Type.NUMBER, null));
-        DEFAULTS.put(Keyword.LIST.getKeyword(), new TypePrimitive(Type.LIST, null));
-        DEFAULTS.put(Keyword.FUNCTION.getKeyword(), new TypePrimitive(Type.FUNCTION, null));
-        DEFAULTS.put(Keyword.TYPE.getKeyword(), new TypePrimitive(Type.TYPE, null));
-        DEFAULTS.put(Keyword.BOOLEAN.getKeyword(), new TypePrimitive(Type.BOOLEAN, null));
+        for (Type type : Type.values())
+        {
+            if (type.getName() == null)
+            {
+                continue;
+            }
+            DEFAULTS.put(type.getName(), new TypePrimitive(type, null));
+        }
 
         DEFAULTS.put(Keyword.TRUE.getKeyword(), new BooleanPrimitive(true, null));
         DEFAULTS.put(Keyword.FALSE.getKeyword(), new BooleanPrimitive(false, null));
-
         DEFAULTS.put(Keyword.VOID.getKeyword(), new VoidPrimitive());
     }
 

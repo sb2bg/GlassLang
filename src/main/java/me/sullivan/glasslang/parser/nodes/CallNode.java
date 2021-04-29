@@ -1,7 +1,7 @@
 package me.sullivan.glasslang.parser.nodes;
 
 import me.sullivan.glasslang.interpreter.Interpreter;
-import me.sullivan.glasslang.interpreter.primitives.Primitive;
+import me.sullivan.glasslang.interpreter.primitives.types.Primitive;
 
 import java.util.List;
 

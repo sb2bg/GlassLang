@@ -1,8 +1,8 @@
 package me.sullivan.glasslang.interpreter;
 
 import me.sullivan.glasslang.interpreter.errors.RuntimeError;
-import me.sullivan.glasslang.interpreter.primitives.*;
-import me.sullivan.glasslang.interpreter.primitives.functions.FunctionPrimitive;
+import me.sullivan.glasslang.interpreter.primitives.types.functions.FunctionPrimitive;
+import me.sullivan.glasslang.interpreter.primitives.types.*;
 import me.sullivan.glasslang.interpreter.runtime.Context;
 import me.sullivan.glasslang.lexer.token.Token;
 import me.sullivan.glasslang.lexer.token.TokenType;
@@ -11,6 +11,7 @@ import org.javatuples.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public record Interpreter(Context context)
 {
@@ -69,6 +70,11 @@ public record Interpreter(Context context)
     {
         return context.getTable().get(node.getToken().getValue(), context);
     }
+
+    // TODO fix: if you do,
+    // i = 3
+    // println(i += 4)
+    // it will print 7, but i still equals 3 in the top context. i only equals 7 in function context. To fix, update it at top level context?
 
     public Primitive<?> visitAssignmentNode(AssignmentNode node)
     {
@@ -176,14 +182,12 @@ public record Interpreter(Context context)
 
     public Primitive<?> visitListNode(ListNode node)
     {
-        List<Primitive<?>> list = new ArrayList<>();
+        return new ListPrimitive(node.getValue().stream().map(this::visitNode).collect(Collectors.toList()), context);
+    }
 
-        for (Node valNode : node.getValue())
-        {
-            list.add(visitNode(valNode));
-        }
-
-        return new ListPrimitive(list, context);
+    public Primitive<?> visitMapNode(DictNode dictNode)
+    {
+        return new DictionaryPrimitive(dictNode.getValue(), context);
     }
 
     public Primitive<?> visitImportNode(ImportNode node)
