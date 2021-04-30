@@ -46,6 +46,8 @@ public class Lexer
         TOKENS.put("!=", TokenType.NOT_EQUAL);
         TOKENS.put("==", TokenType.EQUAL_OP);
         TOKENS.put("=>", TokenType.LAMBDA);
+        TOKENS.put(";", TokenType.EOL);
+        TOKENS.put("\n", TokenType.EOL);
 
         TOKENS.put("func", TokenType.FUNC);
         TOKENS.put("import", TokenType.IMPORT);
@@ -129,8 +131,7 @@ public class Lexer
             }
         }
 
-        tokens.add(new Token(TokenType.EOL));
-
+        tokens.add(new Token(TokenType.EOF));
         return tokens;
     }
 
@@ -254,7 +255,7 @@ public class Lexer
 
     private boolean isWhiteSpace()
     {
-        return " \t".contains(Character.toString(current));
+        return " \t\r".contains(Character.toString(current));
     }
 
     private boolean isNumber()
@@ -282,9 +283,10 @@ public class Lexer
         return "%+-*/<>=!".contains(Character.toString(current));
     }
 
+    // TODO remove ; from here & map
     private boolean isSingleConsume()
     {
-        return "./,()[]{}:".contains(Character.toString(current));
+        return "./,()[]{}:;\n".contains(Character.toString(current));
     }
 
     private boolean isUnderscore()

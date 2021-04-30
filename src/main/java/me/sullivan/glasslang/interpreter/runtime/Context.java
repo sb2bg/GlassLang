@@ -81,7 +81,7 @@ public class Context
     protected String context;
     protected VariableTable varTable;
 
-    // TODO Possibly fixed, maybe a more elegant solution next?
+    // TODO Possibly fixed (stackoverflow), maybe a more elegant solution next?
     public Context(Context parent, String context)
     {
         this.parent = parent;

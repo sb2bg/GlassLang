@@ -96,12 +96,9 @@ public class NumberPrimitive extends Primitive<Double>
         return equal(other).not();
     }
 
-    // TODO fix num to str method
     public static String doubleToString(Double value)
     {
-        String stringVal = value.toString();
-        return value.toString();
-        //return value % 1 == 0 ? stringVal.substring(0, stringVal.length() - 2) : stringVal;
+        return value % 1 == 0 ? Integer.toString(value.intValue()) : value.toString();
     }
 
     @Override

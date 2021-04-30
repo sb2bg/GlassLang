@@ -14,7 +14,7 @@ public class VoidPrimitive extends Primitive<Void>
     {
         if (other.getType() == Type.STRING)
         {
-            return other;
+            return new StringPrimitive("void", context).add(other);
         }
 
         return super.add(other);

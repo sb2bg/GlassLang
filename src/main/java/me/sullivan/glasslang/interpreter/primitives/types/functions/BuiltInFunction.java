@@ -118,7 +118,6 @@ public class BuiltInFunction extends FunctionBasePrimitive
         return new NumberPrimitive(new SplittableRandom().nextDouble(range.getValue()), context);
     }
 
-    // TODO override all parse methods in sub primitive classes
     private static Primitive<?> parse(Context context, List<Token> args)
     {
         Primitive<?> left = fromTable(0, args, context);

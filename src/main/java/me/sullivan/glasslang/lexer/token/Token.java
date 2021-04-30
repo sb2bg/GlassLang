@@ -5,7 +5,7 @@ import java.util.Objects;
 
 public class Token
 {
-    private TokenType tokenType;
+    private final TokenType tokenType;
     private String value;
 
     public Token(TokenType type, String value)

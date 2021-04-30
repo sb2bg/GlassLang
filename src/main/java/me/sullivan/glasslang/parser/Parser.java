@@ -23,9 +23,42 @@ public class Parser
         this.current = tokens.get(index);
     }
 
+    public ListNode statements()
+    {
+        List<Node> nodes = new ArrayList<>();
+        skipNewlines();
+        nodes.add(expression());
+
+        while (skipNewlines() != 0)
+        {
+            nodes.add(expression());
+        }
+
+        return new ListNode(nodes);
+    }
+
+    private int skipNewlines()
+    {
+        int lines = 0;
+
+        while (current.getType() == TokenType.EOL)
+        {
+            if (index < tokens.size() - 1)
+            {
+                advance();
+                lines++;
+                continue;
+            }
+
+            break;
+        }
+        return lines;
+    }
+
     public Node parse()
     {
-        Node exp = expression();
+        // TODO parse package/class name
+        Node statements = statements();
 
         if (current.getType() != TokenType.EOL && current.getType() != TokenType.EOF)
         {
@@ -39,7 +72,7 @@ public class Parser
             });
         }
 
-        return exp;
+        return statements;
     }
 
     private Node mathOp(NodeMethod a, NodeMethod b, TokenType[] types)
@@ -511,7 +544,7 @@ public class Parser
     private void advance()
     {
         index++;
-        current = index >= tokens.size() ? current : tokens.get(index);
+        current = index >= tokens.size() ? new Token(TokenType.EOF) : tokens.get(index);
     }
 
     private boolean isMatch(TokenType[] types)
@@ -519,6 +552,7 @@ public class Parser
         return isMatch(current, types);
     }
 
+    // TODO maybe: while newline, advance and once its not a newline check if match, if we get to end return false
     private boolean isMatch(Token token, TokenType[] types)
     {
         return List.of(types).contains(token.getType());

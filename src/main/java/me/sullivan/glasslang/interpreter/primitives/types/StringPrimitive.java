@@ -26,9 +26,6 @@ public class StringPrimitive extends Primitive<String>
                     return new VoidPrimitive();
                 }
             });
-
-            // TODO add logic - TypePrimitive(, context)
-            put(Type.TYPE, VoidPrimitive::new);
         }});
     }
 
@@ -39,7 +36,7 @@ public class StringPrimitive extends Primitive<String>
                 {
                     case STRING, BOOLEAN -> new StringPrimitive(value + other, context);
                     case NUMBER -> new StringPrimitive(value + NumberPrimitive.doubleToString(Primitive.<NumberPrimitive>cast(other).getValue()), context);
-                    case VOID -> this;
+                    case VOID -> new StringPrimitive(value + "void", context);
                     default -> throw new RuntimeError("Cannot concatenate " + getClass().getSimpleName() + " and " + other.getClass().getSimpleName(), context);
                 };
     }

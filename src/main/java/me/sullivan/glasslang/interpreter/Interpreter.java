@@ -1,8 +1,8 @@
 package me.sullivan.glasslang.interpreter;
 
 import me.sullivan.glasslang.interpreter.errors.RuntimeError;
-import me.sullivan.glasslang.interpreter.primitives.types.functions.FunctionPrimitive;
 import me.sullivan.glasslang.interpreter.primitives.types.*;
+import me.sullivan.glasslang.interpreter.primitives.types.functions.FunctionPrimitive;
 import me.sullivan.glasslang.interpreter.runtime.Context;
 import me.sullivan.glasslang.lexer.token.Token;
 import me.sullivan.glasslang.lexer.token.TokenType;
@@ -10,7 +10,9 @@ import me.sullivan.glasslang.parser.nodes.*;
 import org.javatuples.Pair;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 public record Interpreter(Context context)
@@ -79,14 +81,14 @@ public record Interpreter(Context context)
     public Primitive<?> visitAssignmentNode(AssignmentNode node)
     {
         return switch (node.getOperator().getType())
-        {
-            case EQUALS -> context.getTable().set(node.getToken().getValue(), visitNode(node.getValue()), context);
-            case PLUS_EQUALS -> context.getTable().set(node.getToken().getValue(), context.getTable().get(node.getToken().getValue(), context).add(visitNode(node.getValue())), context);
-            case MINUS_EQUALS -> context.getTable().set(node.getToken().getValue(), context.getTable().get(node.getToken().getValue(), context).min(visitNode(node.getValue())), context);
-            case DIVIDED_EQUALS -> context.getTable().set(node.getToken().getValue(), context.getTable().get(node.getToken().getValue(), context).div(visitNode(node.getValue())), context);
-            case TIMES_EQUALS -> context.getTable().set(node.getToken().getValue(), context.getTable().get(node.getToken().getValue(), context).mul(visitNode(node.getValue())), context);
-            default -> throw new RuntimeError("Operator " + node.getOperator() + " undefined for assignment", context);
-        };
+                {
+                    case EQUALS -> context.getTable().set(node.getToken().getValue(), visitNode(node.getValue()), context);
+                    case PLUS_EQUALS -> context.getTable().set(node.getToken().getValue(), context.getTable().get(node.getToken().getValue(), context).add(visitNode(node.getValue())), context);
+                    case MINUS_EQUALS -> context.getTable().set(node.getToken().getValue(), context.getTable().get(node.getToken().getValue(), context).min(visitNode(node.getValue())), context);
+                    case DIVIDED_EQUALS -> context.getTable().set(node.getToken().getValue(), context.getTable().get(node.getToken().getValue(), context).div(visitNode(node.getValue())), context);
+                    case TIMES_EQUALS -> context.getTable().set(node.getToken().getValue(), context.getTable().get(node.getToken().getValue(), context).mul(visitNode(node.getValue())), context);
+                    default -> throw new RuntimeError("Operator " + node.getOperator() + " undefined for assignment", context);
+                };
     }
 
     public Primitive<?> visitIfNode(IfNode node)
@@ -185,9 +187,12 @@ public record Interpreter(Context context)
         return new ListPrimitive(node.getValue().stream().map(this::visitNode).collect(Collectors.toList()), context);
     }
 
-    public Primitive<?> visitMapNode(DictNode dictNode)
+    public Primitive<?> visitMapNode(DictNode node)
     {
-        return new DictionaryPrimitive(dictNode.getValue(), context);
+        return new DictionaryPrimitive(new LinkedHashMap<>()
+        {{
+            node.getValue().forEach((key, value) -> put(visitNode(key), visitNode(value)));
+        }}, context);
     }
 
     public Primitive<?> visitImportNode(ImportNode node)
