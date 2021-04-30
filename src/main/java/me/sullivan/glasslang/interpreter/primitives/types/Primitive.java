@@ -25,7 +25,6 @@ public abstract class Primitive<T>
         this.context = context;
         this.parseMethods = parseMethods;
 
-        // TODO fix - println(parse(44, str) + 4) (output is 44.04, should be 444)
         for (Type parseType : Type.values())
         {
             if (parseMethods.containsKey(parseType))
@@ -33,7 +32,7 @@ public abstract class Primitive<T>
                 continue;
             }
 
-            parseMethods.put(parseType, () -> new StringPrimitive(this.toString(), context));
+            parseMethods.put(parseType, () -> new StringPrimitive(toString(), context));
         }
     }
 
@@ -95,12 +94,12 @@ public abstract class Primitive<T>
 
     public BooleanPrimitive equal(Primitive<?> other)
     {
-        return new BooleanPrimitive(this.equals(other), context);
+        return new BooleanPrimitive(equals(other), context);
     }
 
     public BooleanPrimitive notEqual(Primitive<?> other)
     {
-        throw new RuntimeError("Cannot compare " + getClass().getSimpleName() + " and " + other.getClass().getSimpleName(), context);
+        return equal(other).not();
     }
 
     public BooleanPrimitive and(Primitive<?> other)
@@ -120,7 +119,7 @@ public abstract class Primitive<T>
 
     public boolean isTrue()
     {
-        throw new RuntimeError("Cannot check if " + getClass().getSimpleName() + " is true", context);
+        return type != Type.VOID;
     }
 
     public Primitive<?> call(List<Node> argNodes, Context runtime)

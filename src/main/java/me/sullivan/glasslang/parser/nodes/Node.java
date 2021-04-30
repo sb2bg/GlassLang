@@ -44,12 +44,12 @@ public abstract class Node implements Comparable<Node>
         {
             return false;
         }
-        return Objects.equals(token, node.token);
+        return Objects.equals(token, node.token) && Objects.equals(getValue(), node.getValue());
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash(token);
+        return Objects.hash(token, getValue());
     }
 }

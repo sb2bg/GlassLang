@@ -8,9 +8,9 @@ import me.sullivan.glasslang.parser.nodes.Node;
 
 import java.util.*;
 
-public class DictionaryPrimitive extends Primitive<TreeMap<Node, Node>>
+public class DictionaryPrimitive extends Primitive<LinkedHashMap<Primitive<?>, Primitive<?>>>
 {
-    public DictionaryPrimitive(TreeMap<Node, Node> value, Context context)
+    public DictionaryPrimitive(LinkedHashMap<Primitive<?>, Primitive<?>> value, Context context)
     {
         super(value, Type.DICTIONARY, context, new HashMap<>());
     }
@@ -38,6 +38,7 @@ public class DictionaryPrimitive extends Primitive<TreeMap<Node, Node>>
         return this;
     }
 
+    // TODO why the fuck are some returning null
     @Override
     public Primitive<?> call(List<Node> argNodes, Context runtime)
     {
@@ -45,10 +46,10 @@ public class DictionaryPrimitive extends Primitive<TreeMap<Node, Node>>
         {{
             add(new Token(TokenType.IDENTIFIER, "value"));
         }};
+
         Interpreter interpreter = registerArgs(argNodes, args, getExecution("internal.getMapValue", runtime));
+        Primitive<?> v = value.get(interpreter.visitNode(argNodes.get(0)));
 
-        Node node = value.get(argNodes.get(0));
-
-        return node != null ? interpreter.visitNode(value.get(argNodes.get(0))) : new VoidPrimitive();
+        return v == null ? new VoidPrimitive() : v;
     }
 }
