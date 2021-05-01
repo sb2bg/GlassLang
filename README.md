@@ -7,7 +7,7 @@ updated with new features.
 ## Features
 TODO
 
-## Usage
+## Usage (multi line if and function statements are currently in the works)
 Since Glass is turing complete, there's a lot you can do with it. A simple functional based approach
 to FizzBuzz would look like this:
 ``` glass
@@ -26,3 +26,4 @@ end
 println(for i = 1 to 16 => fizzBuzz(i))
 ```
 which would print `[1, 2, Fizz, 4, Buzz, Fizz, 7, 8, Fizz, Buzz, 11, Fizz, 13, 14, FizzBuzz]` to console.
+
