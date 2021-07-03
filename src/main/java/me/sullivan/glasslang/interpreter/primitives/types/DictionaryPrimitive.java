@@ -6,7 +6,10 @@ import me.sullivan.glasslang.lexer.token.Token;
 import me.sullivan.glasslang.lexer.token.TokenType;
 import me.sullivan.glasslang.parser.nodes.Node;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 public class DictionaryPrimitive extends Primitive<LinkedHashMap<Primitive<?>, Primitive<?>>>
 {
@@ -38,7 +41,12 @@ public class DictionaryPrimitive extends Primitive<LinkedHashMap<Primitive<?>, P
         return this;
     }
 
-    // TODO why the fuck are some returning null
+    // TODO when using (in at LEAST in this case) a list and index as key, (was string in specific case), it only kept one key
+    /*
+    names = ["night", "astro"]
+    test = { names(0): false, names(1): true }
+    println("LIST: " + parse(names, str) + " DICT: " + parse(test, str))
+     */
     @Override
     public Primitive<?> call(List<Node> argNodes, Context runtime)
     {

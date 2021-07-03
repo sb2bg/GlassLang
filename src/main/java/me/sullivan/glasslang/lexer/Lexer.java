@@ -37,7 +37,6 @@ public class Lexer
         TOKENS.put(">", TokenType.GREATER);
         TOKENS.put("<=", TokenType.LESS_EQUAL);
         TOKENS.put(">=", TokenType.GREATER_EQUAL);
-        TOKENS.put("<>", TokenType.NOT_EQUAL);
         TOKENS.put(",", TokenType.COMMA);
         TOKENS.put("+=", TokenType.PLUS_EQUALS);
         TOKENS.put("-=", TokenType.MINUS_EQUALS);
@@ -283,10 +282,9 @@ public class Lexer
         return "%+-*/<>=!".contains(Character.toString(current));
     }
 
-    // TODO remove ; from here & map
     private boolean isSingleConsume()
     {
-        return "./,()[]{}:;\n".contains(Character.toString(current));
+        return "./,()[]{}:;".contains(Character.toString(current));
     }
 
     private boolean isUnderscore()

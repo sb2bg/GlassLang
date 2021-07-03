@@ -4,7 +4,7 @@ import me.sullivan.glasslang.lexer.token.Token;
 import me.sullivan.glasslang.lexer.token.TokenType;
 import me.sullivan.glasslang.parser.errors.InvalidSyntaxError;
 import me.sullivan.glasslang.parser.nodes.*;
-import org.javatuples.Pair;
+import me.sullivan.glasslang.parser.nodes.ifnodes.IfNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +31,11 @@ public class Parser
 
         while (skipNewlines() != 0)
         {
+            if (current.getType() == TokenType.END || current.getType() == TokenType.ELSE)
+            {
+                break;
+            }
+
             nodes.add(expression());
         }
 
@@ -62,6 +67,7 @@ public class Parser
 
         if (current.getType() != TokenType.EOL && current.getType() != TokenType.EOF)
         {
+            System.out.println(current);
             throw new InvalidSyntaxError(new TokenType[]{
                     TokenType.PLUS, TokenType.MINUS, TokenType.TIMES,
                     TokenType.DIVIDE, TokenType.PLUS_EQUALS, TokenType.MINUS_EQUALS,
@@ -235,10 +241,8 @@ public class Parser
                 advance();
                 return expression;
             }
-            else
-            {
-                throw new InvalidSyntaxError(new TokenType[]{TokenType.LPAREN});
-            }
+
+            throw new InvalidSyntaxError(new TokenType[]{TokenType.LPAREN});
         }
         else if (current.getType() == TokenType.IMPORT)
         {
@@ -271,7 +275,8 @@ public class Parser
 
         throw new InvalidSyntaxError(new TokenType[]{
                 TokenType.NUMBER, TokenType.IDENTIFIER, TokenType.PLUS,
-                TokenType.MINUS, TokenType.LPAREN});
+                TokenType.MINUS, TokenType.LPAREN, TokenType.FUNC, TokenType.LBRACE,
+                TokenType.LBRACKET, TokenType.IF, TokenType.FOR, TokenType.WHILE});
     }
 
     private Node dictExpression()
@@ -351,6 +356,8 @@ public class Parser
             throw new InvalidSyntaxError(new TokenType[]{TokenType.LAMBDA});
         }
 
+        advance();
+
         return new ImportNode(string);
     }
 
@@ -367,6 +374,7 @@ public class Parser
 
         if (current.getType() == TokenType.RBRACKET)
         {
+            advance();
             return new ListNode(expressions);
         }
         expressions.add(expression());
@@ -389,8 +397,6 @@ public class Parser
 
     private Node ifExpression()
     {
-        Token token = current;
-
         if (current.getType() != TokenType.IF)
         {
             throw new InvalidSyntaxError(new TokenType[]{TokenType.IF});
@@ -405,17 +411,39 @@ public class Parser
         }
 
         advance();
-        Pair<Node, Node> ifCase = new Pair<>(condition, expression());
 
-        Node elseCase = null;
+        boolean statement = current.getType() == TokenType.EOL;
+        return new IfNode(condition, statement ? statements() : expression(), elseExpression(statement), statement);
+    }
 
-        if (current.getType() == TokenType.ELSE)
+    private Node elseExpression(boolean statement)
+    {
+        if (!statement)
         {
+            if (current.getType() != TokenType.ELSE)
+            {
+                throw new InvalidSyntaxError(new TokenType[]{TokenType.ELSE});
+            }
+
             advance();
-            elseCase = expression();
+            return expression();
         }
 
-        return new IfNode(token, ifCase, elseCase);
+        if (current.getType() == TokenType.END)
+        {
+            advance();
+            return null;
+        }
+        else if (current.getType() == TokenType.ELSE)
+        {
+            advance();
+            Node statements = statements();
+            advance();
+
+            return statements;
+        }
+
+        throw new InvalidSyntaxError(new TokenType[]{TokenType.ELSE, TokenType.END});
     }
 
     private Node forExpression()
@@ -425,6 +453,7 @@ public class Parser
             throw new InvalidSyntaxError(new TokenType[]{TokenType.FOR});
         }
 
+        advance();
         Token variable = assignment();
         Node startVal = expression();
 
@@ -541,6 +570,7 @@ public class Parser
         return new FunctionDefinitionNode(func, args, expression());
     }
 
+    // TODO make it return current after advancing
     private void advance()
     {
         index++;

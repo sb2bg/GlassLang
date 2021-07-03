@@ -6,8 +6,8 @@ import me.sullivan.glasslang.lexer.token.Token;
 
 public class BinOpNode extends Node
 {
-    private Node left;
-    private Node right;
+    private final Node left;
+    private final Node right;
 
     public BinOpNode(Node left, Token token, Node right)
     {

@@ -31,7 +31,7 @@ public class BuiltInFunction extends FunctionBasePrimitive
     {
         builtIns.put("print", new Pair<>(BuiltInFunction::print, new String[]{"value"}));
         builtIns.put("println", new Pair<>(BuiltInFunction::println, new String[]{"value"}));
-        builtIns.put("input", new Pair<>(BuiltInFunction::input, new String[]{"value"}));
+        builtIns.put("input", new Pair<>(BuiltInFunction::input, new String[]{"value"})); // TODO allow no args as well
         builtIns.put("is", new Pair<>(BuiltInFunction::is, new String[]{"left", "right"}));
         builtIns.put("length", new Pair<>(BuiltInFunction::length, new String[]{"value"}));
         builtIns.put("randInt", new Pair<>(BuiltInFunction::randInt, new String[]{"value"}));
@@ -39,6 +39,7 @@ public class BuiltInFunction extends FunctionBasePrimitive
         builtIns.put("parse", new Pair<>(BuiltInFunction::parse, new String[]{"left", "right"}));
         builtIns.put("in", new Pair<>(BuiltInFunction::in, new String[]{"left", "right"}));
         builtIns.put("typeOf", new Pair<>(BuiltInFunction::typeOf, new String[]{"value"}));
+        builtIns.put("systime", new Pair<>(BuiltInFunction::systime, new String[0]));
     }
 
     public static Set<String> getBuiltInNames()
@@ -129,6 +130,11 @@ public class BuiltInFunction extends FunctionBasePrimitive
     private static Primitive<?> typeOf(Context context, List<Token> args)
     {
         return new TypePrimitive(fromTable(0, args, context).getType(), context);
+    }
+
+    private static Primitive<?> systime(Context context, List<Token> args)
+    {
+        return new NumberPrimitive(System.currentTimeMillis(), context);
     }
 
     @Override

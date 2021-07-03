@@ -1,3 +1,0 @@
-tokens = []
-current = input("GLang EMBEDDED >>>")
-println(current)

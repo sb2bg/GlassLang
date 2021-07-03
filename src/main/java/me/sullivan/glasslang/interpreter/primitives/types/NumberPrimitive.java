@@ -98,6 +98,11 @@ public class NumberPrimitive extends Primitive<Double>
 
     public static String doubleToString(Double value)
     {
+        if (value >= Integer.MAX_VALUE)
+        {
+            return value.toString();
+        }
+
         return value % 1 == 0 ? Integer.toString(value.intValue()) : value.toString();
     }
 

@@ -14,8 +14,9 @@ public enum TokenType
     RBRACKET("RIGHT SQUARE BRACKET", "']'"),
     GREATER_EQUAL("GREATER THAN EQUAL TO", "'>='"), FUNC("FUNC", "'func'"), COMMA("COMMA", "','"),
     STEP("STEP", "'step'"), AND("AND", "'and'"), OR("OR", "'or'"), NOT("NOT", "'not'"), ELSE("ELSE", "'else'"),
-    END("END", "'end'"), LBRACE ("LBRACE", "'{'}"), RBRACE ("RBRACE", "'}'}"), COLON ("COLON", "':'"),
-    TO("TO", "'to'"), LAMBDA("LAMBDA", "'=>'"), MOD("MODULUS", "'%'"), IMPORT("IMPORT", "'import'"), PERIOD("PERIOD", "'.'"),
+    END("END", "'end'"), LBRACE("LBRACE", "'{'"), RBRACE("RBRACE", "'}'}"), COLON("COLON", "':'"),
+    TO("TO", "'to'"), LAMBDA("LAMBDA", "'=>'"), MOD("MODULUS", "'%'"), IMPORT("IMPORT", "'import'"),
+    PERIOD("PERIOD", "'.'"),
 
     EOL("EndOfLine", null), EOF("EndOfFile", null);
 

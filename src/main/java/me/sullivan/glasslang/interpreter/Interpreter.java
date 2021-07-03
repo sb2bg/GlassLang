@@ -7,12 +7,11 @@ import me.sullivan.glasslang.interpreter.runtime.Context;
 import me.sullivan.glasslang.lexer.token.Token;
 import me.sullivan.glasslang.lexer.token.TokenType;
 import me.sullivan.glasslang.parser.nodes.*;
-import org.javatuples.Pair;
+import me.sullivan.glasslang.parser.nodes.ifnodes.IfNode;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 public record Interpreter(Context context)
@@ -91,19 +90,28 @@ public record Interpreter(Context context)
                 };
     }
 
+
     public Primitive<?> visitIfNode(IfNode node)
     {
-        Pair<Node, Node> ifCase = node.getValue();
-        Primitive<?> condition = visitNode(ifCase.getValue0());
-        Node valueNode = ifCase.getValue1();
+        Primitive<?> condition = visitNode(node.getCondition());
 
         if (condition.isTrue())
         {
-            return visitNode(valueNode);
+            Primitive<?> value = visitNode(node.getValue());
+
+            if (!node.isStatement())
+            {
+                return value;
+            }
         }
         else if (node.getElseCase() != null)
         {
-            return visitNode(node.getElseCase());
+            Primitive<?> value = visitNode(node.getElseCase());
+
+            if (!node.isStatement())
+            {
+                return value;
+            }
         }
 
         return new VoidPrimitive();
@@ -130,7 +138,6 @@ public record Interpreter(Context context)
         {
             context.getTable().set(node.getValue(), new NumberPrimitive(i, context), context);
             i += stepVal.getValue();
-
             values.add(visitNode(node.getEval()));
         }
 
