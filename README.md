@@ -1,5 +1,5 @@
 # GlassLang
-
+## Note: this is the old repo, their is a new version of this project in java, and the one in rust that you can follow through https://github.com/sb2bg/RustGlass
 ## About Glass
 Glass is a flexible and dynamic in addition to be turning complete. The language is constantly being
 updated with new features. 
